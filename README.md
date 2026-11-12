@@ -4,6 +4,16 @@ A personal project manager for macOS: to-dos in the style of Things (Inbox, Toda
 This Evening, Upcoming, Anytime, Someday, Logbook, areas, projects with headings), Markdown
 note pages and an on-device AI assistant. SwiftUI + SwiftData, Swift 6, macOS 26 or later.
 
+## Download
+
+**[Download Ezra 0.1.0 for Mac](https://github.com/sjlouji/Ezra/releases/latest/download/Ezra-0.1.0-mac.zip)** (7 MB zip, Apple silicon and Intel) · [all releases](https://github.com/sjlouji/Ezra/releases)
+
+- Needs macOS 26 or later.
+- Unzip it and move Ezra to Applications. The build is not notarized, so the first time right-click Ezra and choose
+  Open, or allow it under System Settings › Privacy & Security.
+- Sync is off in the download: it contains no Firebase project settings. To use sync, build from source with your own
+  `Ezra/GoogleService-Info.plist`.
+
 ## Run
 
 ```bash

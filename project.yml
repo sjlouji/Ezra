@@ -1,0 +1,111 @@
+# Xcode project definition. Regenerate Ezra.xcodeproj with: xcodegen generate
+#
+# Turning on iCloud sync (needs a paid Apple Developer Program team):
+#   1. Set CODE_SIGN_STYLE to Automatic and remove the CODE_SIGN_IDENTITY line
+#      (DEVELOPMENT_TEAM must be a paid team).
+#   2. Set EzraCloudKitContainer below to "iCloud.app.ezra.Ezra".
+#   3. Uncomment the three iCloud entitlements below.
+#   4. Run xcodegen generate, then build once from Xcode so it registers the container.
+name: Ezra
+options:
+  bundleIdPrefix: app.ezra
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Signed with this Mac's Apple Development certificate so the Keychain keeps recognising the app across rebuilds.
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "Apple Development"
+    DEVELOPMENT_TEAM: "Z7V2UFGTCB"
+targets:
+  Ezra:
+    type: application
+    platform: macOS
+    sources: [Ezra, Shared]
+    dependencies:
+      - target: EzraWidgets
+    info:
+      path: Ezra/Info.plist
+      properties:
+        CFBundleDisplayName: Ezra
+        LSApplicationCategoryType: public.app-category.productivity
+        EzraCloudKitContainer: ""
+        # Ollama is reached over plain HTTP on this Mac.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        NSMicrophoneUsageDescription: Ezra listens when you press the microphone button, to type what you say.
+        NSSpeechRecognitionUsageDescription: Ezra turns what you say into text when you press the microphone button.
+        NSCalendarsFullAccessUsageDescription: Ezra shows your calendar events beside your to-dos in Today and Upcoming.
+        CFBundleURLTypes:
+          - CFBundleURLName: app.ezra.Ezra
+            CFBundleURLSchemes: [ezra]
+    entitlements:
+      path: Ezra/Ezra.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        # Sync talks to the user's own Firebase project.
+        com.apple.security.network.client: true
+        # Files the user attaches to notes, and the folder they choose to keep them in.
+        com.apple.security.files.user-selected.read-write: true
+        com.apple.security.files.bookmarks.app-scope: true
+        # Reading Apple Calendar, once the user connects it in Settings.
+        com.apple.security.personal-information.calendars: true
+        # Dictation in the chat and in Quick Entry.
+        com.apple.security.device.audio-input: true
+        # The folder the app shares with its widgets.
+        com.apple.security.application-groups: [Z7V2UFGTCB.app.ezra.Ezra]
+        # com.apple.developer.icloud-services: [CloudKit]
+        # com.apple.developer.icloud-container-identifiers: [iCloud.app.ezra.Ezra]
+        # com.apple.developer.aps-environment: development
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_BUNDLE_IDENTIFIER: app.ezra.Ezra
+        ENABLE_HARDENED_RUNTIME: YES
+  EzraWidgets:
+    type: app-extension
+    platform: macOS
+    sources: [EzraWidgets, Shared]
+    info:
+      path: EzraWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Ezra
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: EzraWidgets/EzraWidgets.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups: [Z7V2UFGTCB.app.ezra.Ezra]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.ezra.Ezra.Widgets
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+  EzraTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [EzraTests]
+    dependencies:
+      - target: Ezra
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: app.ezra.EzraTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Ezra.app/Contents/MacOS/Ezra"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+schemes:
+  Ezra:
+    build:
+      targets:
+        Ezra: all
+        EzraTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [EzraTests]

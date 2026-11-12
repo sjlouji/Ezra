@@ -15,8 +15,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: "2"
     # Signed with this Mac's Apple Development certificate so the Keychain keeps recognising the app across rebuilds.
     CODE_SIGN_STYLE: Manual
     CODE_SIGN_IDENTITY: "Apple Development"
@@ -38,6 +38,8 @@ targets:
       path: Ezra/Info.plist
       properties:
         CFBundleDisplayName: Ezra
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.productivity
         EzraCloudKitContainer: ""
         # Ollama is reached over plain HTTP on this Mac.
@@ -92,6 +94,8 @@ targets:
       path: EzraWidgets/Info.plist
       properties:
         CFBundleDisplayName: Ezra
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:

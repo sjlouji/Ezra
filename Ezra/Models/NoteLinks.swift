@@ -42,9 +42,11 @@ extension Workspace {
         try notes().filter { $0 != note && links($0.body, to: note) }
     }
 
-    /// The to-dos whose notes link to `note`, open ones first.
+    /// The to-dos `note` is attached to, or whose notes link to it; open ones first.
     func todos(linking note: Note) throws -> [ToDo] {
-        try allToDos().filter { !$0.isTemplate && links($0.notes, to: note) }.sorted { !$0.isCompleted && $1.isCompleted }
+        let id = note.uuid.uuidString
+        return try allToDos().filter { !$0.isTemplate && ($0.noteIDs.contains(id) || links($0.notes, to: note)) }
+            .sorted { !$0.isCompleted && $1.isCompleted }
     }
 
     private func links(_ text: String, to note: Note) -> Bool {
@@ -53,10 +55,13 @@ extension Workspace {
         return NoteLinks.titles(in: text).contains { $0.localizedCaseInsensitiveCompare(note.title.trimmed) == .orderedSame }
     }
 
-    /// A new to-do that links back to `note`, filed where the note is.
+    /// A new to-do with `note` attached, filed where the note is.
     @discardableResult
     func addToDo(for note: Note, title: String) throws -> ToDo {
-        try addToDo(title: title, notes: "[[\(note.title)]]", project: note.project)
+        let todo = try addToDo(title: title, project: note.project, area: note.area)
+        todo.heading = note.heading
+        try attach(note, to: todo)
+        return todo
     }
 
     /// One thing the assistant should keep in mind in every chat.

@@ -24,7 +24,7 @@ struct LinkTests {
 
         #expect(try workspace.backlinks(to: plan) == [diary])
         #expect(try workspace.todos(linking: plan).map(\.title) == ["Print tickets", "Book hotel"])
-        #expect(made.project?.name == "Rome" && made.notes == "[[Trip plan]]")
+        #expect(made.project?.name == "Rome" && made.noteIDs == [plan.uuid.uuidString])
         #expect(try workspace.note(titled: " trip PLAN ") == plan)
     }
 

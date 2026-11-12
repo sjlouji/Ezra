@@ -140,7 +140,7 @@ struct DragGhost: View {
         .overlay(alignment: .bottomLeading) {
             if let hint {
                 Text(hint)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.vertical, 3)
                     .padding(.horizontal, 8)

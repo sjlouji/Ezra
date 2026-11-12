@@ -1,19 +1,22 @@
 import SwiftData
 import SwiftUI
 
-/// The Inbox: a flat list.
+/// The Inbox: a flat list of the to-dos and notes not yet filed anywhere.
 struct InboxView: View {
     @Environment(Library.self) private var library
     private var all: [ToDo] { library.open }
+    @Query(sort: \Note.order) private var allNotes: [Note]
 
     var body: some View {
         let inbox = all.filter { SmartList.inbox.contains($0) }
+        let notes = allNotes.filter(\.isInInbox).inOrder
         ScreenList {
             ScreenTitle(icon: .list(.inbox), title: SmartList.inbox.title).plainRow()
-            if inbox.isEmpty {
+            if inbox.isEmpty && notes.isEmpty {
                 EmptyRow(text: "Your Inbox is empty").plainRow()
             }
             ToDoRows(todos: inbox, showsContainer: false, showsWhen: true)
+            NoteRows(notes: notes)
         }
     }
 }
@@ -32,6 +35,8 @@ struct GroupedListView: View {
         let icon: ListIcon.Kind
         let title: String
         let destination: Destination
+        /// What a to-do dropped on this group joins.
+        let target: DropTarget
         let todos: [ToDo]
     }
 
@@ -42,11 +47,12 @@ struct GroupedListView: View {
             if todos.isEmpty {
                 EmptyRow(text: "Nothing in \(list.title)").plainRow()
             }
-            ToDoRows(todos: todos.filter { $0.project == nil && $0.area == nil }, showsContainer: false, showsWhen: true)
+            ToDoRows(todos: todos.filter { $0.project == nil && $0.area == nil }, showsContainer: false, showsWhen: true, section: .detached)
             ForEach(groups(of: todos)) { group in
                 GroupHeader(icon: group.icon, title: group.title) { app.destination = group.destination }
+                    .dropTarget(group.target)
                     .plainRow(bottom: 2)
-                ToDoRows(todos: group.todos, showsContainer: false, showsWhen: true)
+                ToDoRows(todos: group.todos, showsContainer: false, showsWhen: true, section: group.target)
             }
         }
     }
@@ -60,13 +66,13 @@ struct GroupedListView: View {
             guard let its = inProject[project.persistentModelID] else { return nil }
             return Group(
                 id: project.persistentModelID, icon: .pie(progress: project.progress, tint: Brand.Palette.accent),
-                title: project.name, destination: .project(project), todos: its
+                title: project.name, destination: .project(project), target: .project(project), todos: its
             )
         }
         var groups = projects.filter { $0.area == nil }.compactMap(group)
         for area in areas {
             if let its = inArea[area.persistentModelID] {
-                groups.append(Group(id: area.persistentModelID, icon: .cube, title: area.name, destination: .area(area), todos: its))
+                groups.append(Group(id: area.persistentModelID, icon: .cube, title: area.name, destination: .area(area), target: .area(area), todos: its))
             }
             groups += projects.filter { $0.area == area }.compactMap(group)
         }

@@ -16,7 +16,7 @@ struct ReplyText: View {
                     ReplyTable(header: header, rows: rows)
                 case .code(let code):
                     ScrollView(.horizontal) {
-                        Text(code).font(.system(size: 12, design: .monospaced)).padding(8)
+                        Text(code).font(.system(size: 13, design: .monospaced)).padding(8)
                     }
                     .background(Brand.Palette.page, in: .rect(cornerRadius: 6))
                 case .line(.heading(let level, let text)):
@@ -43,7 +43,7 @@ struct ReplyText: View {
 }
 
 /// A Markdown table from a reply. It scrolls sideways when it is wider than the chat.
-private struct ReplyTable: View {
+struct ReplyTable: View {
     let header: [String]
     let rows: [[String]]
 
@@ -135,7 +135,7 @@ extension ChatPageView {
     private func saveToNotes() {
         Alerts.shared.attempt("save the page to Notes") {
             let note = try Workspace(context: context).savePage(page)
-            (app.noteToOpen, app.destination) = (note, .notes(nil))
+            app.destination = .note(note)
         }
     }
 }

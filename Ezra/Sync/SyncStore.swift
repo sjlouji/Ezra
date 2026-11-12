@@ -51,6 +51,8 @@ struct ToDoFields: Codable {
     var order: Double; var isDemo: Bool; var bucketRaw: String
     var project: UUID?; var area: UUID?; var heading: UUID?; var event: UUID?
     var repeatRule: Data?; var template: UUID?
+    /// Left out when the to-do has no notes attached, so such to-dos read the same as before notes could be attached.
+    var noteIDs: [String]?
 }
 struct ChecklistFields: Codable { var title: String; var isDone: Bool; var createdAt: Date; var task: UUID? }
 struct ChatFields: Codable {
@@ -59,7 +61,7 @@ struct ChatFields: Codable {
 }
 struct MessageFields: Codable { var roleRaw: String; var text: String; var changes: [String]; var createdAt: Date; var thread: UUID?; var steps: Data? }
 struct AttachmentFields: Codable { var filename: String; var byteCount: Int; var createdAt: Date; var note: UUID? }
-struct NoteFields: Codable { var title: String; var body: String; var createdAt: Date; var updatedAt: Date; var project: UUID?; var order: Double? }
+struct NoteFields: Codable { var title: String; var body: String; var createdAt: Date; var updatedAt: Date; var project: UUID?; var order: Double?; var area: UUID?; var heading: UUID? }
 
 /// Turns the local database into records to send, and applies records that arrive.
 @MainActor
@@ -117,7 +119,7 @@ struct SyncStore {
                 deadline: todo.deadline, reminderAt: todo.reminderAt, tags: todo.tags, completedAt: todo.completedAt,
                 createdAt: todo.createdAt, order: todo.order, isDemo: todo.isDemo, bucketRaw: todo.bucketRaw,
                 project: todo.project?.uuid, area: todo.area?.uuid, heading: todo.heading?.uuid, event: todo.event?.uuid,
-                repeatRule: todo.repeatRuleData, template: todo.templateUUID
+                repeatRule: todo.repeatRuleData, template: todo.templateUUID, noteIDs: todo.noteIDs.isEmpty ? nil : todo.noteIDs
             )))
         }
         for item in try all(ChecklistItem.self) {
@@ -127,7 +129,8 @@ struct SyncStore {
         }
         for note in try all(Note.self) {
             records.append(try record(.note, note.uuid, NoteFields(
-                title: note.title, body: note.body, createdAt: note.createdAt, updatedAt: note.updatedAt, project: note.project?.uuid, order: note.order
+                title: note.title, body: note.body, createdAt: note.createdAt, updatedAt: note.updatedAt, project: note.project?.uuid, order: note.order,
+                area: note.area?.uuid, heading: note.heading?.uuid
             )))
         }
         for thread in try all(ChatThread.self) {

@@ -10,10 +10,10 @@ enum Destination: Hashable {
     case planner
     /// The AI assistant's own page.
     case assistant
-    /// Lists reached through Quick Find: Tomorrow, Deadlines, Repeating, All Projects, Logged Projects.
+    /// Lists reached through Quick Find: Tomorrow, Deadlines, Repeating, All Projects, All Notes, Logged Projects.
     case special(SpecialList)
-    /// Note pages: every one, or one project's.
-    case notes(Project?)
+    /// One note, open as a page.
+    case note(Note)
 }
 
 enum SpecialList: String, CaseIterable, Identifiable {
@@ -22,6 +22,7 @@ enum SpecialList: String, CaseIterable, Identifiable {
     case repeating = "Repeating"
     case templates = "Templates"
     case allProjects = "All Projects"
+    case allNotes = "All Notes"
     case loggedProjects = "Logged Projects"
 
     var id: String { rawValue }
@@ -97,8 +98,6 @@ final class AppModel {
     var selection: [ToDo] = []
     /// Text to put in the assistant's box when its screen opens.
     var assistantDraft: String?
-    /// A note to show as soon as the Notes screen is up; set by a link to it.
-    var noteToOpen: Note?
     /// The to-do the Move panel is open for.
     var moving: ToDo?
     /// What was typed outside any field, handed to Quick Find as its first characters.
@@ -106,11 +105,11 @@ final class AppModel {
     /// The store; set when the window appears.
     var context: ModelContext?
 
-    /// The bottom toolbar belongs to the to-do screens, not to notes or settings.
+    /// The bottom toolbar belongs to the to-do screens, not to an open note or the assistant.
     var showsToolbar: Bool {
         switch destination {
         case .list, .project, .area, .planner, .special: true
-        case .notes, .assistant, nil: false
+        case .note, .assistant, nil: false
         }
     }
 
@@ -203,7 +202,26 @@ final class AppModel {
         // The planner adds to the day it is showing.
         case .planner: Placement(schedule: .on(day))
         case .list(let list): Placement(schedule: list.newToDoSchedule())
-        case .notes, .assistant, .special, nil: Placement()
+        case .note, .assistant, .special, nil: Placement()
+        }
+    }
+
+    /// True while a to-do is being dragged: sections with nothing in them show themselves as places to drop it.
+    var isDraggingToDo: Bool {
+        if case .todo = drag?.item { true } else { false }
+    }
+
+    /// Starts a note where the user is (the open project or area, else the Inbox) and opens it.
+    func newNote() {
+        guard let context else { return }
+        Alerts.shared.attempt("create the note") {
+            let workspace = Workspace(context: context)
+            let note = switch destination {
+            case .project(let project): try workspace.addNote(title: "Untitled", project: project)
+            case .area(let area): try workspace.addNote(title: "Untitled", area: area)
+            default: try workspace.addNote(title: "Untitled")
+            }
+            destination = .note(note)
         }
     }
 }

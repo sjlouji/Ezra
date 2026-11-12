@@ -56,7 +56,7 @@ struct MarkdownPage: View {
                     view(for: blocks[index], line: index)
                 }
             }
-            .font(.system(size: 14))
+            .font(.system(size: 15))
             .lineSpacing(4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .textSelection(.enabled)
@@ -96,7 +96,7 @@ struct MarkdownPage: View {
     }
 }
 
-/// Under a note: the notes that link to it and the to-dos that mention it, with a way to add one.
+/// Under a note: the notes that link to it and the to-dos it is attached to, with a way to add one.
 struct NoteLinksSection: View {
     let note: Note
     @Environment(AppModel.self) private var app
@@ -122,12 +122,13 @@ struct NoteLinksSection: View {
                 HStack(spacing: 6) {
                     Text("Linked from").foregroundStyle(Brand.Palette.secondary)
                     ForEach(backlinks) { other in
-                        Button(other.title) { app.noteToOpen = other }
+                        Button(other.title) { app.destination = .note(other) }
                             .foregroundStyle(Brand.Palette.accent)
                             .lineLimit(1)
                     }
                 }
             }
+            if !todos.isEmpty { Text("Attached to").foregroundStyle(Brand.Palette.secondary) }
             ForEach(todos) { todo in
                 HStack(spacing: 8) {
                     Button {
@@ -143,7 +144,7 @@ struct NoteLinksSection: View {
             }
             HStack(spacing: 8) {
                 Image(systemName: "plus").foregroundStyle(Brand.Palette.secondary)
-                TextField("New to-do linked to this note", text: $newTitle)
+                TextField("New to-do from this note", text: $newTitle)
                     .textFieldStyle(.plain)
                     .onSubmit {
                         guard !newTitle.trimmed.isEmpty else { return }
@@ -153,47 +154,12 @@ struct NoteLinksSection: View {
                         }
                     }
             }
-            Text("Write [[\(note.title)]] in another note or in a to-do's notes to link it here.")
-                .font(.system(size: 10.5))
+            Text("To attach this note to a to-do, open the to-do and choose Attach note.")
+                .font(.system(size: 11.5))
                 .foregroundStyle(Brand.Palette.secondary.opacity(0.8))
         }
         .font(Brand.Fonts.subtitle)
         .buttonStyle(.hand)
         .padding(.top, 10)
-    }
-}
-
-/// On an open to-do: the notes its text links to, as chips that open them.
-struct LinkedNoteChips: View {
-    let text: String
-    @Environment(AppModel.self) private var app
-    @Environment(\.modelContext) private var context
-
-    var body: some View {
-        let titles = NoteLinks.titles(in: text)
-        if !titles.isEmpty {
-            HStack(spacing: 6) {
-                ForEach(titles, id: \.self) { title in
-                    Button {
-                        Alerts.shared.attempt("open the linked note") {
-                            guard let note = try Workspace(context: context).note(titled: title) else {
-                                throw WorkspaceError.notFound(kind: "note", query: title)
-                            }
-                            app.closeCard()
-                            (app.noteToOpen, app.destination) = (note, .notes(nil))
-                        }
-                    } label: {
-                        Label(title, systemImage: "note.text")
-                            .font(Brand.Fonts.subtitle)
-                            .foregroundStyle(Brand.Palette.accent)
-                            .padding(.vertical, 3)
-                            .padding(.horizontal, 8)
-                            .background(Brand.Palette.accent.opacity(0.1), in: .capsule)
-                    }
-                    .buttonStyle(.hand)
-                    .help("Open this note")
-                }
-            }
-        }
     }
 }

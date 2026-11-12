@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// Search and navigation in one field. It first looks at the names of lists, areas, projects and to-dos, and at tags;
+/// Search and navigation in one field. It first looks at the names of lists, areas, projects, notes and to-dos, and at tags;
 /// "Continue Search" widens it to notes, checklists and the Logbook.
 struct QuickFindView: View {
     @Environment(AppModel.self) private var app
@@ -10,6 +10,7 @@ struct QuickFindView: View {
     private var todos: [ToDo] { isWide ? library.open + library.done : library.open }
     @Query(sort: \Project.order) private var projects: [Project]
     @Query(sort: \Area.order) private var areas: [Area]
+    @Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
     @State private var query = ""
     @State private var isWide = false
     @FocusState private var focused: Bool
@@ -25,6 +26,8 @@ struct QuickFindView: View {
             return isWide && (matches(todo.notes) || todo.sortedChecklist.contains { matches($0.title) })
         }
         let shownProjects = projects.filter { !$0.isTemplate && matches($0.name) && (isWide || !$0.isCompleted) }
+        // Notes are found by their title; the widened search reads their text too.
+        let foundNotes = text.isEmpty ? [] : notes.filter { matches($0.title) || (isWide && matches($0.body)) }
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 HStack(spacing: 6) {
@@ -58,6 +61,16 @@ struct QuickFindView: View {
                     ForEach(shownProjects) { project in
                         result(.pie(progress: project.progress, tint: Brand.Palette.secondary), project.name) { go(.project(project)) }
                     }
+                    ForEach(foundNotes.prefix(20)) { note in
+                        row(action: { go(.note(note)) }) {
+                            Image(systemName: "doc.text").frame(width: 18).foregroundStyle(Brand.Palette.accent)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(note.title)
+                                Text(note.containerName ?? SmartList.inbox.title).font(Brand.Fonts.subtitle).foregroundStyle(Brand.Palette.secondary)
+                            }
+                            Spacer()
+                        }
+                    }
                     ForEach(tags, id: \.self) { tag in
                         row(action: { query = tag }) {
                             Image(systemName: "tag").frame(width: 18).foregroundStyle(Brand.Palette.secondary)
@@ -88,7 +101,7 @@ struct QuickFindView: View {
                             Text("in notes, checklists and the Logbook").foregroundStyle(Brand.Palette.secondary)
                             Spacer()
                         }
-                    } else if !text.isEmpty, found.isEmpty, shownProjects.isEmpty, tags.isEmpty {
+                    } else if !text.isEmpty, found.isEmpty, shownProjects.isEmpty, tags.isEmpty, foundNotes.isEmpty {
                         Text("No matches for “\(text)”")
                             .foregroundStyle(Brand.Palette.secondary)
                             .frame(maxWidth: .infinity)
@@ -99,7 +112,7 @@ struct QuickFindView: View {
                 .padding(.bottom, 10)
             }
         }
-        .font(.system(size: 13.5))
+        .font(.system(size: 14.5))
         .foregroundStyle(Brand.Palette.ink)
         .frame(width: 520, height: 480)
         .background(Brand.Palette.page)

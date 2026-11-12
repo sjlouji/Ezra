@@ -21,11 +21,11 @@ struct UpcomingView: View {
             ForEach(1...7, id: \.self) { offset in
                 let day = SmartList.day(offset)
                 let events = showsEvents ? CalendarService.shared.merged(Planner.events(on: day, from: allEvents), on: day) : []
-                dayHeader(day, isTomorrow: offset == 1).plainRow(bottom: 6)
+                dayHeader(day, isTomorrow: offset == 1).dropTarget(.day(day)).plainRow(bottom: 6)
                 if !events.isEmpty {
                     EventsCard(events: events, onCard: false).plainRow(bottom: 6)
                 }
-                ToDoRows(todos: upcoming.filter { $0.startDate.map { calendar.isDate($0, inSameDayAs: day) } ?? false })
+                ToDoRows(todos: upcoming.filter { $0.startDate.map { calendar.isDate($0, inSameDayAs: day) } ?? false }, section: .day(day))
             }
             ForEach(months(of: upcoming.filter { ($0.startDate ?? .distantPast) >= SmartList.day(8) })) { month in
                 GroupHeader(icon: nil, title: month.id.formatted(.dateTime.month(.wide))).plainRow(bottom: 4)
@@ -43,7 +43,7 @@ struct UpcomingView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Rectangle().fill(Brand.Palette.hairline).frame(height: 1)
                 Text(isTomorrow ? Brand.Words.tomorrow : day.formatted(.dateTime.weekday(.wide)))
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(Brand.Palette.secondary)
             }
             .padding(.bottom, 4)

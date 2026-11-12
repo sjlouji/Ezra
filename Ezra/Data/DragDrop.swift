@@ -33,16 +33,16 @@ enum DropTarget {
     case list(SmartList)
     case project(Project)
     case area(Area)
-    /// A day in the planner's week strip.
+    /// A day in the planner's week strip, or a day's section in Upcoming.
     case day(Date)
+    /// Today's two parts: This Evening (true) or the day itself (false).
+    case evening(Bool)
     /// An hour of a day on the week grid: the to-do gets that day, and a reminder at that time.
     case hour(Date)
     /// A heading inside a project.
     case heading(Heading)
     /// Out of whatever project or area it is in.
     case detached
-    /// The Notes entry in the sidebar: a note dropped here leaves its project.
-    case allNotes
     /// The pinned or unpinned part of the chat history: a chat dropped here is pinned or unpinned.
     case chats(pinned: Bool)
     /// A bucket card on the planner, optionally just above one of its to-dos.
@@ -124,11 +124,14 @@ extension AppModel {
         drag?.location = location
 
         let isOverOwnRun = reorderWithinRun(at: location) || sortAmongRows(at: location)
-        let hovered = isOverOwnRun ? nil : (foreignSlot(at: location) == nil ? zone(at: location) : nil)
-        if !isOverOwnRun, hovered?.key != hoverZone {
+        // A row of another section stands for that section: dropping on it moves the to-do there, and the hint says so.
+        let foreign = isOverOwnRun ? nil : foreignSlot(at: location)
+        let hovered = isOverOwnRun || foreign != nil ? nil : zone(at: location)
+        let hint = foreign.map { $0.fallback.flatMap(item.hint) } ?? hovered.flatMap { item.hint(for: $0.value.target) }
+        if !isOverOwnRun, hovered?.key != hoverZone || hint != dropHint {
             withAnimation(.easeOut(duration: 0.12)) {
                 hoverZone = hovered?.key
-                dropHint = hovered.flatMap { item.hint(for: $0.value.target) }
+                dropHint = hint
             }
         } else if isOverOwnRun, insertion == nil, hoverZone != nil {
             withAnimation(.easeOut(duration: 0.12)) { (hoverZone, dropHint) = (nil, nil) }
@@ -208,8 +211,9 @@ extension AppModel {
         case .project(let project): Placement(project: project)
         case .area(let area): Placement(area: area)
         case .heading(let heading): Placement(project: heading.project)
-        case .detached, .allNotes, .chats: Placement()
+        case .detached, .chats: Placement()
         case .day(let day): Placement(schedule: .on(day))
+        case .evening(let late): Placement(schedule: .on(.now, evening: late))
         case .hour(let moment): Placement(schedule: .on(moment))
         case .bucket(let bucket, let backlog, _): Placement(schedule: backlog ? .unscheduled : .on(day), bucket: bucket)
         }
@@ -235,9 +239,10 @@ extension Workspace {
             todo.heading = heading
         case .detached:
             (todo.project, todo.area, todo.heading) = (nil, nil, nil)
-        case .allNotes, .chats:
+        case .chats:
             return
         case .day(let day): Self.apply(.on(day), to: todo)
+        case .evening(let late): Self.apply(.on(.now, evening: late), to: todo)
         case .hour(let moment):
             Self.apply(.on(moment), to: todo)
             todo.reminderAt = moment

@@ -74,7 +74,7 @@ extension SyncStore {
                     (todo.title, todo.notes, todo.whenRaw, todo.startDate, todo.evening) = (fields.title, fields.notes, fields.whenRaw, fields.startDate, fields.evening)
                     (todo.deadline, todo.reminderAt, todo.tags, todo.completedAt) = (fields.deadline, fields.reminderAt, fields.tags, fields.completedAt)
                     (todo.createdAt, todo.order, todo.isDemo, todo.bucketRaw) = (fields.createdAt, fields.order, fields.isDemo, fields.bucketRaw)
-                    (todo.repeatRuleData, todo.templateUUID) = (fields.repeatRule, fields.template)
+                    (todo.repeatRuleData, todo.templateUUID, todo.noteIDs) = (fields.repeatRule, fields.template, fields.noteIDs ?? [])
                     todos[id] = todo
                     touched.append(todo)
                     links.append {
@@ -95,7 +95,11 @@ extension SyncStore {
                     (note.title, note.body, note.createdAt, note.updatedAt) = (fields.title, fields.body, fields.createdAt, fields.updatedAt)
                     note.order = fields.order ?? 0
                     notes[id] = note
-                    links.append { note.project = fields.project.flatMap { projects[$0] } }
+                    links.append {
+                        note.project = fields.project.flatMap { projects[$0] }
+                        note.area = fields.area.flatMap { areas[$0] }
+                        note.heading = fields.heading.flatMap { headings[$0] }
+                    }
                 case .chat:
                     let fields = try decoder.decode(ChatFields.self, from: data)
                     let thread = found(chats[id], id) { ChatThread(title: fields.title) }

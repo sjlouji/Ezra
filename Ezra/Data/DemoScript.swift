@@ -72,7 +72,7 @@ enum DemoScript {
             case "assistant":
                 app.destination = .assistant
             case "notes":
-                app.destination = .notes(nil)
+                app.destination = .special(.allNotes)
             default:
                 if let list = SmartList(rawValue: screen) {
                     app.destination = .list(list)

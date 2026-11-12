@@ -61,7 +61,7 @@ struct TitleMenu<Items: View>: View {
             items
         } label: {
             Image(systemName: "ellipsis")
-                .font(.system(size: 15, weight: .bold))
+                .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Brand.Palette.secondary.opacity(0.8))
                 .accessibilityLabel("More")
         }
@@ -99,7 +99,7 @@ struct TagFilterBar: View {
             Text(title)
                 .lineLimit(1)
                 .fixedSize()
-                .font(.system(size: 12.5, weight: .semibold))
+                .font(.system(size: 13.5, weight: .semibold))
                 .foregroundStyle(isSelected ? .white : Brand.Palette.secondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 3)
@@ -123,11 +123,11 @@ struct GroupHeader: View {
             HStack(spacing: 8) {
                 if let icon { ListIcon(icon, size: 16) }
                 Text(title)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(tint)
                 if action != nil {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(Brand.Palette.secondary)
                 }
                 Spacer()
@@ -185,7 +185,7 @@ struct EventsCard: View {
                 .foregroundStyle(Brand.Palette.accent)
             }
         }
-        .font(.system(size: 13))
+        .font(.system(size: 14))
         .padding(.vertical, onCard ? 10 : 2)
         .padding(.horizontal, onCard ? 12 : 0)
         .frame(maxWidth: .infinity, alignment: .leading)

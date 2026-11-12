@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// The lists reached by name through Quick Find: Tomorrow, Deadlines, Repeating, All Projects, Logged Projects.
+/// The lists reached by name through Quick Find: Tomorrow, Deadlines, Repeating, All Projects, All Notes, Logged Projects.
 struct SpecialListView: View {
     let kind: SpecialList
     @Environment(AppModel.self) private var app
@@ -9,6 +9,7 @@ struct SpecialListView: View {
     @Environment(Library.self) private var library
     private var todos: [ToDo] { library.open }
     @Query(sort: \Project.order) private var projects: [Project]
+    @Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
 
     var body: some View {
         ScreenList {
@@ -40,6 +41,10 @@ struct SpecialListView: View {
                 projectRows(projects.filter { !$0.isCompleted && !$0.isTemplate })
             case .loggedProjects:
                 projectRows(projects.filter(\.isCompleted))
+            case .allNotes:
+                // Every note wherever it is filed, the most recently edited first.
+                if notes.isEmpty { EmptyRow(text: "No notes yet. Use New Note in the toolbar of any list.").plainRow() }
+                NoteRows(notes: notes, showsContainer: true)
             }
         }
     }
@@ -50,6 +55,7 @@ struct SpecialListView: View {
         case .deadlines: .list(.upcoming)
         case .repeating, .templates: .list(.anytime)
         case .allProjects, .loggedProjects: .pie(progress: 0.5, tint: Brand.Palette.accent)
+        case .allNotes: .list(.inbox)
         }
     }
 

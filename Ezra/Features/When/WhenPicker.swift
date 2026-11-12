@@ -47,7 +47,7 @@ struct WhenPicker: View {
                 .focused($queryFocused)
                 .onSubmit { if let first = suggestions.first { choose(first) } }
         }
-        .font(.system(size: 13))
+        .font(.system(size: 14))
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
         .background(.white.opacity(0.12), in: .rect(cornerRadius: 7))
@@ -125,7 +125,7 @@ struct WhenPicker: View {
             HStack(spacing: 0) {
                 ForEach(days.prefix(7), id: \.self) { day in
                     Text(day.formatted(.dateTime.weekday(.narrow)))
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(Brand.Palette.pickerText.opacity(0.45))
                         .frame(maxWidth: .infinity)
                 }
@@ -152,7 +152,7 @@ struct WhenPicker: View {
                 if day == today, !isSelected {
                     ListIcon(.star, size: 13)
                 } else {
-                    Text("\(number)").font(.system(size: 13, weight: isSelected ? .bold : .regular))
+                    Text("\(number)").font(.system(size: 14, weight: isSelected ? .bold : .regular))
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 30)
@@ -175,7 +175,7 @@ struct WhenPicker: View {
                 Text(title).font(Brand.Fonts.rowBold)
                 Spacer()
                 if selected {
-                    Image(systemName: "checkmark").font(.system(size: 12, weight: .bold))
+                    Image(systemName: "checkmark").font(.system(size: 13, weight: .bold))
                 }
             }
             .padding(.vertical, 6)
@@ -217,7 +217,7 @@ struct WhenPicker: View {
                 }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.hand)
-                .font(.system(size: 10, weight: .bold))
+                .font(.system(size: 11, weight: .bold))
             } else if addsReminder {
                 TextField("Time, for example 9am", text: $reminderText)
                     .textFieldStyle(.plain)

@@ -124,23 +124,8 @@ struct PlannerTests {
         try await attach(ProjectView(project: project), app: app, container: container, size: CGSize(width: 760, height: 700), named: "project")
     }
 
-    /// The Notes section with a few notes. Run with TEST_RUNNER_EZRA_SNAPSHOTS=1.
-    @Test(.enabled(if: ProcessInfo.processInfo.environment["EZRA_SNAPSHOTS"] == "1"))
-    func notesSnapshot() async throws {
-        let (workspace, container) = try makeWorkspace()
-        let project = try workspace.addProject(name: "Winter menu")
-        try workspace.addNote(title: "Supplier calls", body: "Ring the squash farm on Monday.\nAsk about weekly delivery.")
-        try workspace.addNote(title: "Ideas", body: "- A soup of the week\n- Loyalty card")
-        try workspace.addNote(
-            title: "Menu tasting",
-            body: "# Goal\nPick **2 winter tacos**.\n\n- Squash taco is the favourite\n- Less salt in the salsa\n\n## To do\n- [x] Order squash for Friday\n- [ ] Print the new menu board",
-            project: project
-        )
-        try await attach(NotesBrowser(project: nil), app: AppModel(), container: container, size: CGSize(width: 900, height: 560), named: "notes")
-    }
-
     /// The whole window on one screen, as the app shows it. Run with TEST_RUNNER_EZRA_SNAPSHOTS=1.
-    @Test(.enabled(if: ProcessInfo.processInfo.environment["EZRA_SNAPSHOTS"] == "1"), arguments: ["today", "repeat", "when", "quickfind", "move", "assistant", "assistant-empty", "planner-week", "planner-month", "planner-year", "today-dark", "assistant-dark", "today-nosidebar", "planner-month-nosidebar"])
+    @Test(.enabled(if: ProcessInfo.processInfo.environment["EZRA_SNAPSHOTS"] == "1"), arguments: ["today", "repeat", "when", "quickfind", "move", "assistant", "assistant-empty", "planner-week", "planner-month", "planner-year", "today-dark", "assistant-dark", "today-nosidebar", "planner-month-nosidebar", "notes-project", "notes-todo", "notes-page", "notes-inbox", "notes-owner", "notes-find", "notes-layout"])
     func windowSnapshot(screen name: String) async throws {
         let screen = name.replacingOccurrences(of: "-dark", with: "").replacingOccurrences(of: "-nosidebar", with: "")
         // The sidebar's state is a saved preference; put back whatever the user had.
@@ -158,6 +143,7 @@ struct PlannerTests {
         case "assistant": app.destination = .assistant
         default: app.destination = .list(.today)
         }
+        if screen.hasPrefix("notes-") { try showNoteWorkflow(screen, app: app, workspace: workspace) }
         // The planner remembers its view in the app's preferences; put back whatever the user had.
         let savedMode = UserDefaults.standard.string(forKey: "planner.mode")
         defer { UserDefaults.standard.set(savedMode, forKey: "planner.mode") }
@@ -191,6 +177,11 @@ struct PlannerTests {
                 try workspace.setRepeat(todo, RepeatRule())
                 app.destination = .special(.repeating)
             }
+            try await Task.sleep(for: .seconds(0.8))
+        }
+        if screen == "notes-find" {
+            app.quickFindSeed = "retry"
+            app.setQuickFind(true)
             try await Task.sleep(for: .seconds(0.8))
         }
         if screen == "quickfind" {

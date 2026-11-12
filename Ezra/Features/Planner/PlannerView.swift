@@ -46,7 +46,7 @@ struct PlannerView: View {
                 Button("New Event", systemImage: "plus") { newEvent() }
                     .labelStyle(.iconOnly)
                     .buttonStyle(.hand)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Brand.Palette.secondary)
                     .padding(8)
                     .help("New Event")
@@ -189,7 +189,7 @@ private struct WeekStrip: View {
         } label: {
             VStack(spacing: 1) {
                 Text(day.formatted(.dateTime.day()))
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                 Text(day.formatted(.dateTime.weekday(.short)).uppercased())
                     .font(.system(size: 9, weight: .semibold))
             }
@@ -219,7 +219,7 @@ private struct WeekStrip: View {
         }
         .labelStyle(.iconOnly)
         .buttonStyle(.hand)
-        .font(.system(size: 13, weight: .semibold))
+        .font(.system(size: 14, weight: .semibold))
         .foregroundStyle(Brand.Palette.secondary)
     }
 }
@@ -245,7 +245,7 @@ private struct BucketCard: View {
                 }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.hand)
-                .font(.system(size: 14))
+                .font(.system(size: 15))
                 .foregroundStyle(Brand.Palette.secondary)
             }
             ForEach(todos) { todo in

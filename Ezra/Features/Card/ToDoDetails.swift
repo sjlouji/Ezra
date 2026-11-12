@@ -14,7 +14,7 @@ struct ToDoDetails: View {
         VStack(alignment: .leading, spacing: 10) {
             MarkdownEditor(text: $todo.notes, placeholder: Brand.Words.notes)
                 .padding(.leading, 24)
-            LinkedNoteChips(text: todo.notes).padding(.leading, 24)
+            AttachedNotes(todo: todo).padding(.leading, 24)
 
             if !todo.sortedChecklist.isEmpty {
                 VStack(spacing: 0) {
@@ -82,7 +82,7 @@ struct ToDoDetails: View {
                         .labelStyle(.iconOnly)
                         .font(.system(size: 8, weight: .bold))
                 }
-                .font(.system(size: 11))
+                .font(.system(size: 12))
                 .foregroundStyle(Brand.Palette.secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 2)
@@ -124,7 +124,7 @@ struct ToDoDetails: View {
     private var reminderChip: some View {
         if let reminder = todo.reminderAt {
             HStack(spacing: 5) {
-                Image(systemName: "bell.fill").font(.system(size: 10))
+                Image(systemName: "bell.fill").font(.system(size: 11))
                 Text(reminder.formatted(.dateTime.hour().minute()))
                 clearButton("Remove reminder") {
                     Alerts.shared.attempt("remove the reminder") { try Workspace(context: context).setReminder(todo, at: nil) }
@@ -148,7 +148,7 @@ struct ToDoDetails: View {
     private var deadlineChip: some View {
         if let deadline = todo.deadline {
             HStack(spacing: 5) {
-                Image(systemName: "flag.fill").font(.system(size: 10))
+                Image(systemName: "flag.fill").font(.system(size: 11))
                 Text("\(Brand.Words.deadline): \(deadline.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day()))").fixedSize()
                 clearButton("Remove deadline") {
                     Alerts.shared.attempt("remove the deadline") { try Workspace(context: context).setDeadline(todo, nil) }
@@ -180,7 +180,7 @@ struct ToDoDetails: View {
         Button(label, systemImage: symbol, action: action)
             .labelStyle(.iconOnly)
             .buttonStyle(.hand)
-            .font(.system(size: 13.5))
+            .font(.system(size: 14.5))
             .foregroundStyle(Brand.Palette.secondary.opacity(0.8))
             .help(label)
     }
@@ -212,7 +212,7 @@ private struct ChecklistLine: View {
                 CheckBox(checked: item.isDone, circle: true, size: 13)
             }
             TextField("Item", text: $item.title)
-                .font(.system(size: 13.5))
+                .font(.system(size: 14.5))
                 .strikethrough(item.isDone)
                 .foregroundStyle(item.isDone ? Brand.Palette.secondary : Brand.Palette.ink)
             Button("Remove item", systemImage: "xmark", action: remove)

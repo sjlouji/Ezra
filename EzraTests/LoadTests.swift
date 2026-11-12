@@ -40,7 +40,7 @@ struct LoadTests {
         defer { UserDefaults.standard.set(savedMode, forKey: "planner.mode") }
         for (name, destination) in [("Today", Destination.list(.today)), ("Upcoming", .list(.upcoming)), ("Anytime", .list(.anytime)), ("Logbook", .list(.logbook)),
                                     ("Planner day", .planner), ("Planner week", .planner), ("Planner month", .planner), ("Planner year", .planner),
-                                    ("Notes", .notes(nil)), ("Assistant", .assistant)] {
+                                    ("Notes", .special(.allNotes)), ("Assistant", .assistant)] {
             if name.hasPrefix("Planner ") { UserDefaults.standard.set(String(name.dropFirst(8)), forKey: "planner.mode") }
             let app = AppModel()
             app.destination = destination

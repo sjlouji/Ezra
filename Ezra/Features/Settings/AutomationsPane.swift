@@ -18,7 +18,7 @@ struct AutomationsPane: View {
                         VStack(alignment: .leading, spacing: 1) {
                             Text(automation.title.isEmpty ? "Untitled" : automation.title).fontWeight(.medium)
                             Text("\(automation.schedule). \(automation.lastRun.map { "Last ran \($0.formatted(date: .abbreviated, time: .shortened))." } ?? "Has not run yet.")")
-                                .font(.system(size: 11))
+                                .font(.system(size: 12))
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -100,7 +100,7 @@ struct ShortcutsPane: View {
                     ForEach(shortcuts, id: \.0) { keys, meaning in
                         LabeledContent(meaning) {
                             Text(keys)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
                                 .padding(.vertical, 2)
                                 .padding(.horizontal, 7)
                                 .background(.quaternary, in: .rect(cornerRadius: 5))

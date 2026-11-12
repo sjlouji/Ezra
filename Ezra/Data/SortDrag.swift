@@ -3,8 +3,8 @@ import SwiftUI
 
 /// The lists whose rows can be put in order by dragging, other than to-dos (which have their own runs).
 enum SortGroup: Hashable {
-    /// The notes list as shown: every note, or one project's.
-    case notes(Project?)
+    /// The notes shown together in one place: a project's, a heading's, an area's (by that container's ID), or the Inbox's (nil).
+    case notes(PersistentIdentifier?)
     /// The projects of one area in the sidebar; nil for the projects outside any area.
     case projects(Area?)
     case areas
@@ -78,10 +78,10 @@ extension DragItem {
     /// Whether dropping this on `target` does something. Only such targets light up.
     func accepts(_ target: DropTarget) -> Bool {
         switch (self, target) {
-        case (.todo, .allNotes), (.magicPlus, .allNotes), (.todo, .chats), (.magicPlus, .chats): false
+        case (.todo, .chats), (.magicPlus, .chats): false
         case (.chat(let thread), .chats(let pinned)): thread.pinned != pinned
         case (.todo, _), (.magicPlus, _): true
-        case (.note, .project), (.note, .allNotes): true
+        case (.note, .project), (.note, .area), (.note, .heading), (.note, .list(.inbox)): true
         case (.project, .area): true
         default: false
         }
@@ -92,7 +92,9 @@ extension DragItem {
         guard accepts(target) else { return nil }
         switch (self, target) {
         case (.note, .project(let project)): return "File under \(project.name)"
-        case (.note, .allNotes): return "Take out of its project"
+        case (.note, .area(let area)): return "File under \(area.name)"
+        case (.note, .heading(let heading)): return "File under \(heading.title)"
+        case (.note, .list): return "Move to the Inbox"
         case (.chat, .chats(let pinned)): return pinned ? "Pin" : "Unpin"
         case (.magicPlus, .list(let list)): return "New to-do in \(list.title)"
         case (.magicPlus, .project(let project)): return "New to-do in \(project.name)"
@@ -105,6 +107,7 @@ extension DragItem {
         case (_, .heading(let heading)): return "Move under \(heading.title)"
         case (_, .day(let day)): return "Schedule for \(day.formatted(.dateTime.weekday(.wide).day()))"
         case (_, .hour(let moment)): return "\(moment.formatted(.dateTime.weekday(.abbreviated))) at \(moment.formatted(date: .omitted, time: .shortened))"
+        case (_, .evening(let late)): return late ? "Move to \(Brand.Words.thisEvening)" : "Move to \(SmartList.today.title)"
         case (_, .detached): return "Take out of its project"
         default: return nil
         }
@@ -212,8 +215,10 @@ extension Workspace {
     /// Applies a drop of a note or project on a sidebar entry.
     func file(_ item: DragItem, at target: DropTarget) throws {
         switch (item, target) {
-        case (.note(let note), .project(let project)): note.project = project
-        case (.note(let note), .allNotes): note.project = nil
+        case (.note(let note), .project(let project)): try move(note, to: project)
+        case (.note(let note), .area(let area)): try move(note, to: nil, area: area)
+        case (.note(let note), .heading(let heading)): try move(note, to: heading.project, heading: heading)
+        case (.note(let note), .list(.inbox)): try move(note, to: nil)
         case (.project(let project), .area(let area)):
             project.area = area
             project.order = (area.sortedProjects.filter { $0 != project }.map(\.order).max() ?? project.order) + 1

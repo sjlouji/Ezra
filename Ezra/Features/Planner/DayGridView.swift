@@ -54,7 +54,7 @@ struct DayGridView: View {
             ForEach(Planner.firstHour..<Planner.lastHour, id: \.self) { hour in
                 HStack(alignment: .top, spacing: 8) {
                     Text(hourLabel(hour))
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Brand.Palette.secondary)
                         .frame(width: gutter - 12, alignment: .trailing)
                         .offset(y: -6)
@@ -96,7 +96,7 @@ struct DayGridView: View {
                 Text(project.name).foregroundStyle(Brand.Palette.secondary).lineLimit(1)
             }
         }
-        .font(.system(size: 11))
+        .font(.system(size: 12))
         .foregroundStyle(Brand.Palette.ink)
         .padding(.horizontal, 8)
         .padding(.vertical, 5)

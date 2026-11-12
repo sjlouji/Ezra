@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// The toolbar under every to-do screen: new to-do, new heading, When, move, search.
+/// The toolbar under every to-do screen: new to-do, new heading, new note, When, move, search.
 struct BottomBar: View {
     @Environment(AppModel.self) private var app
     @Environment(\.modelContext) private var context
@@ -16,7 +16,6 @@ struct BottomBar: View {
             } else {
             HStack(spacing: 0) {
                 tool("New To-Do (⌘N)", "plus") { app.newToDo() }
-                    .keyboardShortcut("n")
                     // Drag the plus to a list, a day or a bucket to put the new to-do exactly there.
                     .background { Probe { plusProbe = $0 } }
                     .opacity(app.drag?.item == .magicPlus ? 0 : 1)
@@ -32,12 +31,12 @@ struct BottomBar: View {
                     guard let project = currentProject else { return }
                     Alerts.shared.attempt("add the heading") { try Workspace(context: context).addHeading(title: "New Heading", to: project) }
                 }
+                tool("New Note", "doc.badge.plus") { app.newNote() }
                 tool("\(Brand.Words.when) (⌘S)", "calendar", enabled: open != nil) {
                     if let open { app.pick(.when, for: open) }
                 }
                 tool("Move (⇧⌘M)", "arrow.right", enabled: open != nil) { app.moving = open }
                 tool("\(Brand.Words.quickFind) (⌘F)", "magnifyingglass") { app.setQuickFind(true) }
-                    .keyboardShortcut("f")
             }
             .frame(maxWidth: 560)
             .frame(maxWidth: .infinity)
@@ -56,7 +55,7 @@ struct BottomBar: View {
         Button(label, systemImage: symbol, action: action)
             .labelStyle(.iconOnly)
             .buttonStyle(.hand)
-            .font(.system(size: 14))
+            .font(.system(size: 15))
             .foregroundStyle(Brand.Palette.secondary)
             .frame(maxWidth: .infinity, minHeight: 30)
             .contentShape(.rect)

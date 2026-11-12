@@ -66,7 +66,7 @@ struct StepRow: View {
                 section("Sent") {
                     ScrollView {
                         Text(input)
-                            .font(.system(size: 11, design: .monospaced))
+                            .font(.system(size: 12, design: .monospaced))
                             .foregroundStyle(Brand.Palette.ink)
                             .textSelection(.enabled)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -100,7 +100,7 @@ struct StepRow: View {
                 }
             }
             Text(isRunning ? "Running" : step.state == .failed ? "Failed" : "Done")
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(step.state == .failed ? Brand.Palette.deadline : Brand.Palette.secondary)
         }
         .padding(.horizontal, 10)
@@ -109,7 +109,7 @@ struct StepRow: View {
 
     private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(title).font(.system(size: 10.5, weight: .semibold)).foregroundStyle(Brand.Palette.secondary)
+            Text(title).font(.system(size: 11.5, weight: .semibold)).foregroundStyle(Brand.Palette.secondary)
             content()
                 .padding(8)
                 .frame(maxWidth: .infinity, alignment: .leading)

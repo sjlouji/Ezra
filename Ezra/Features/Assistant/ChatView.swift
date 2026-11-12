@@ -130,7 +130,7 @@ struct ChatView: View {
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.hand)
-            .font(.system(size: 14))
+            .font(.system(size: 15))
             .foregroundStyle(Brand.Palette.secondary)
         }
         .padding(.horizontal, 28)
@@ -223,7 +223,7 @@ struct ChatView: View {
             HStack(alignment: .bottom) {
                 Button("Attach", systemImage: "paperclip") { choosingFiles = true }
                     .labelStyle(.iconOnly)
-                    .font(.system(size: 15))
+                    .font(.system(size: 16))
                     .foregroundStyle(Brand.Palette.secondary)
                     .help("Attach a transcript, document or picture (or drop it on the chat)")
                 TextField(files.isEmpty ? "Ask or tell \(Brand.assistant)…" : "Say what to make from the file…", text: $draft, axis: .vertical)
@@ -239,11 +239,11 @@ struct ChatView: View {
                     }
                 Button("Voice Mode", systemImage: model.speaksReplies ? "speaker.wave.2.fill" : "speaker.slash") { model.speaksReplies.toggle() }
                     .labelStyle(.iconOnly)
-                    .font(.system(size: 14))
+                    .font(.system(size: 15))
                     .foregroundStyle(model.speaksReplies ? Brand.Palette.accent : Brand.Palette.secondary)
                     .help(model.speaksReplies ? "Voice mode is on: replies are read aloud, and what you dictate is sent when you stop speaking" : "Voice mode: read replies aloud and send dictation automatically")
                 if reading > 0 { ProgressView().controlSize(.small).help("Reading the file…") }
-                DictationButton(text: $draft) { if model.speaksReplies { send(draft) } }.font(.system(size: 15))
+                DictationButton(text: $draft) { if model.speaksReplies { send(draft) } }.font(.system(size: 16))
                 Button("Send", systemImage: "arrow.up.circle.fill") { send(draft) }
                     .labelStyle(.iconOnly)
                     .font(.title2)

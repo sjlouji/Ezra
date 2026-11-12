@@ -19,6 +19,7 @@ final class Area {
     var isDemo: Bool = false
     @Relationship(deleteRule: .nullify, inverse: \Project.area) var projects: [Project]? = []
     @Relationship(deleteRule: .nullify, inverse: \ToDo.area) var todos: [ToDo]? = []
+    @Relationship(deleteRule: .nullify, inverse: \Note.area) var notes: [Note]? = []
 
     var sortedProjects: [Project] { (projects ?? []).filter { !$0.isCompleted && !$0.isTemplate }.sorted { $0.order < $1.order } }
     var openToDos: [ToDo] { (todos ?? []).filter { !$0.isCompleted && $0.project == nil }.sorted { $0.order < $1.order } }
@@ -76,6 +77,7 @@ final class Heading {
     var createdAt: Date = Date.now
     var project: Project?
     @Relationship(deleteRule: .nullify, inverse: \ToDo.heading) var tasks: [ToDo]? = []
+    @Relationship(deleteRule: .nullify, inverse: \Note.heading) var notes: [Note]? = []
 
     init(title: String) {
         self.title = title
@@ -106,6 +108,8 @@ final class ToDo {
     var repeatRuleData: Data?
     /// Set on a copy made from a repeating template: that template's ID.
     var templateUUID: UUID?
+    /// The notes attached to this to-do, by their `uuid` as text. A note can be attached to many to-dos.
+    var noteIDs: [String] = []
     var project: Project?
     var area: Area?
     var heading: Heading?
@@ -156,10 +160,15 @@ final class Note {
     var updatedAt: Date = Date.now
     /// Where it sits in the notes list; lower is higher up. Notes that share a value fall back to newest first.
     var order: Double = 0
+    /// Where the note lives: a project (under one of its headings or not), else an area, else the Inbox.
     var project: Project?
+    var area: Area?
+    var heading: Heading?
     @Relationship(deleteRule: .cascade, inverse: \Attachment.note) var attachments: [Attachment]? = []
 
     var sortedAttachments: [Attachment] { (attachments ?? []).sorted { $0.createdAt < $1.createdAt } }
+    /// The project's name, else the area's: where the note lives. Nil for a note in the Inbox.
+    var containerName: String? { project?.name ?? area?.name }
 
     init(title: String, body: String = "") {
         self.title = title

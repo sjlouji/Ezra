@@ -36,7 +36,7 @@ struct WeekView: View {
                         VStack(spacing: 0) {
                             ForEach(Planner.firstHour..<Planner.lastHour, id: \.self) { hour in
                                 Text(hourLabel(hour))
-                                    .font(.system(size: 10, weight: .medium))
+                                    .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(Brand.Palette.secondary)
                                     .frame(width: gutter - 8, height: hourHeight, alignment: .topTrailing)
                                     .offset(y: -6)
@@ -70,10 +70,10 @@ struct WeekView: View {
             } label: {
                 HStack(spacing: 5) {
                     Text(day.formatted(.dateTime.weekday(.abbreviated)).uppercased())
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(isToday ? Brand.Palette.accent : Brand.Palette.secondary)
                     Text(day.formatted(.dateTime.day()))
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(isToday ? .white : Brand.Palette.ink)
                         .frame(minWidth: 22, minHeight: 22)
                         .background(isToday ? Brand.Palette.accent : .clear, in: .circle)
@@ -87,7 +87,7 @@ struct WeekView: View {
                 chip(todo.title, tint: Brand.Palette.secondary, outlined: true).draggable(todo)
             }
             if untimed.count > 4 {
-                Text("+\(untimed.count - 4) more").font(.system(size: 10)).foregroundStyle(Brand.Palette.secondary)
+                Text("+\(untimed.count - 4) more").font(.system(size: 11)).foregroundStyle(Brand.Palette.secondary)
             }
         }
         .buttonStyle(.hand)
@@ -141,7 +141,7 @@ struct WeekView: View {
 
     private func chip(_ title: String, tint: Color, outlined: Bool = false) -> some View {
         Text(title)
-            .font(.system(size: 10.5))
+            .font(.system(size: 11.5))
             .foregroundStyle(Brand.Palette.ink)
             .lineLimit(1)
             .padding(.horizontal, 5)
@@ -152,7 +152,7 @@ struct WeekView: View {
 
     private func block(_ title: String, tint: Color, time: Date, isToDo: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text((isToDo ? "☐ " : "") + title).font(.system(size: 10.5, weight: .semibold)).lineLimit(2)
+            Text((isToDo ? "☐ " : "") + title).font(.system(size: 11.5, weight: .semibold)).lineLimit(2)
             Text(time.formatted(date: .omitted, time: .shortened)).font(.system(size: 9)).foregroundStyle(Brand.Palette.secondary)
         }
         .foregroundStyle(Brand.Palette.ink)

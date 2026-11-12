@@ -5,8 +5,8 @@ enum AgentTools {
     typealias Parameter = AgentTool.Parameter
 
     static let all: [AgentTool] = [
-        listTasks, listProjects, listAreasAndTags, search, readNote, listEvents, showTasks, showWorkload, showDashboard, showPage, buildArtifact, dateMath, plan, setTimer, notify, delegate,
-        addTask, updateTask, completeTask, addProject, addArea, writeNote, addEvent, remember,
+        listTasks, listProjects, listAreasAndTags, search, listNotes, readNote, listEvents, showTasks, showWorkload, showDashboard, showPage, buildArtifact, dateMath, plan, setTimer, notify, delegate,
+        addTask, updateTask, completeTask, addProject, addArea, writeNote, attachNote, addEvent, remember,
     ]
 
     /// One to-do as the model reads it.

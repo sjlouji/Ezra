@@ -26,7 +26,7 @@ struct EventPanel: View {
                 .font(Brand.Fonts.subtitle)
 
                 TextField("Event", text: $event.title, axis: .vertical)
-                    .font(.system(size: 17, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
 
                 Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 8) {
                     GridRow {
@@ -65,7 +65,7 @@ struct EventPanel: View {
 
                 VStack(alignment: .leading, spacing: 10) {
                     TextField(Brand.Words.notes, text: $event.noteBody, axis: .vertical)
-                        .font(.system(size: 13))
+                        .font(.system(size: 14))
                         .lineLimit(4...24)
                     ForEach(event.openToDos) { todo in
                         ToDoRow(todo: todo, style: todo.when == .dated ? .dated : .standard)

@@ -130,7 +130,7 @@ struct ToDoRow: View {
             ListIcon(todo.evening ? .moon : .star, size: 13)
         } else if todo.when == .dated, let start = todo.startDate {
             Text(start.formatted(.dateTime.month(.abbreviated).day()))
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(Brand.Palette.secondary)
                 .padding(.horizontal, 5)
                 .padding(.vertical, 1)
@@ -170,20 +170,21 @@ struct ToDoRow: View {
             Group {
                 if !todo.notes.isEmpty { Image(systemName: "doc").accessibilityLabel("Has notes") }
                 if !(todo.checklist ?? []).isEmpty { Image(systemName: "checklist").accessibilityLabel("Has a checklist") }
+                if !todo.noteIDs.isEmpty { Image(systemName: "doc.text").accessibilityLabel("Has \(todo.noteIDs.count) notes attached") }
                 if todo.templateUUID != nil || todo.isTemplate { Image(systemName: "arrow.triangle.2.circlepath").accessibilityLabel("Repeats") }
             }
-            .font(.system(size: 10))
+            .font(.system(size: 11))
             if let reminder = todo.reminderAt {
                 Label(reminder.formatted(.dateTime.hour().minute()), systemImage: "bell")
-                    .font(.system(size: 10.5))
+                    .font(.system(size: 11.5))
                     .labelStyle(.titleAndIcon)
             }
             if let rule = todo.repeatRule {
-                Text(rule.summary).font(.system(size: 10.5))
+                Text(rule.summary).font(.system(size: 11.5))
             }
             ForEach(todo.tags, id: \.self) { tag in
                 Text(tag)
-                    .font(.system(size: 10.5))
+                    .font(.system(size: 11.5))
                     .padding(.horizontal, 7)
                     .padding(.vertical, 1)
                     .overlay { Capsule().strokeBorder(Brand.Palette.secondary.opacity(0.45), lineWidth: 1) }
@@ -211,7 +212,7 @@ struct ToDoRow: View {
         if let days = todo.daysToDeadline() {
             let urgent = days <= 0
             HStack(spacing: 3) {
-                Image(systemName: "flag.fill").font(.system(size: 10))
+                Image(systemName: "flag.fill").font(.system(size: 11))
                 Text(days == 0 ? "today" : days < 0 ? "\(-days)d ago" : "\(days)d left")
             }
             .font(Brand.Fonts.label)
@@ -259,12 +260,20 @@ struct ToDoRow: View {
     }
 }
 
+/// What tells one row from every other: the to-do it shows and the run it is in.
+private struct RowID: Hashable {
+    let run: UUID
+    let todo: PersistentIdentifier
+}
+
 /// A run of to-do rows on a screen. Dragging one past another moves it there at once, so the rest part to make room.
 struct ToDoRows: View {
     let todos: [ToDo]
     var style = ToDoRow.Style.standard
     var showsContainer = true
     var showsWhen = false
+    /// What a to-do dragged in from another run of rows becomes when dropped on one of these: this section's day, project or heading.
+    var section: DropTarget?
     @Environment(AppModel.self) private var app
     @State private var runID = UUID()
     /// How many rows are loaded so far. A long list starts with one page and takes the next as its end scrolls into view.
@@ -273,10 +282,13 @@ struct ToDoRows: View {
 
     var body: some View {
         let _ = app.runs[runID] = todos
-        ForEach(todos.prefix(loaded)) { todo in
-            ToDoRow(todo: todo, style: style, showsContainer: showsContainer, showsWhen: showsWhen, run: RunRef(id: runID, fallback: nil))
+        // A row is known by its to-do and this run together. Known by the to-do alone, a row that moves to another
+        // section of the same screen is carried over as it was, still naming the section it left.
+        ForEach(todos.prefix(loaded), id: \.persistentModelID) { todo in
+            ToDoRow(todo: todo, style: style, showsContainer: showsContainer, showsWhen: showsWhen, run: RunRef(id: runID, fallback: section))
                 .plainRow()
                 .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                .id(RowID(run: runID, todo: todo.persistentModelID))
         }
         if todos.count > loaded {
             Text("Showing \(loaded.formatted()) of \(todos.count.formatted())")

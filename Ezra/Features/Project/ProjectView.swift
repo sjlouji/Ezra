@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// A project: its notes, loose to-dos, then each heading with its to-dos.
+/// A project: its description, loose to-dos and notes, then each heading with its to-dos and notes.
 struct ProjectView: View {
     @Bindable var project: Project
     @Environment(AppModel.self) private var app
@@ -44,7 +44,7 @@ struct ProjectView: View {
                 Alerts.shared.attempt("create the project") { app.destination = .project(try workspace.stampOut(project)) }
             }
         }
-        Button("Project Notes Pages") { app.destination = .notes(project) }
+        Button("New Note") { app.newNote() }
         Divider()
         Button("Delete Project…", role: .destructive) { confirmsDelete = true }
     }
@@ -53,6 +53,8 @@ struct ProjectView: View {
         let tags = Set((project.tasks ?? []).flatMap(\.tags)).sorted()
         let open = project.openTasks.filter { tag == nil || $0.tags.contains(tag ?? "") }
         let completed = project.completedTasks
+        // Notes carry no tags, so they step aside while the list is filtered by one.
+        let notes = tag == nil ? (project.notes ?? []).inOrder : []
         ScreenList {
             HStack(spacing: 10) {
                 ListIcon(.pie(progress: project.progress, tint: Brand.Palette.accent), size: 23)
@@ -77,10 +79,12 @@ struct ProjectView: View {
                 TagFilterBar(tags: tags, selection: $tag).plainRow()
             }
 
-            ToDoRows(todos: open.filter { $0.heading == nil }, showsContainer: false, showsWhen: true)
+            ToDoRows(todos: open.filter { $0.heading == nil }, showsContainer: false, showsWhen: true, section: .project(project))
+            NoteRows(notes: notes.filter { $0.heading == nil }, group: project.persistentModelID)
             ForEach(project.sortedHeadings) { heading in
-                HeadingRow(heading: heading).sortable(.heading(heading), in: .headings(project)).plainRow(bottom: 4)
-                ToDoRows(todos: open.filter { $0.heading == heading }, showsContainer: false, showsWhen: true)
+                HeadingRow(heading: heading).sortable(.heading(heading), in: .headings(project)).dropTarget(.heading(heading)).plainRow(bottom: 4)
+                ToDoRows(todos: open.filter { $0.heading == heading }, showsContainer: false, showsWhen: true, section: .heading(heading))
+                NoteRows(notes: notes.filter { $0.heading == heading }, group: heading.persistentModelID)
             }
             if !completed.isEmpty {
                 Button(showsCompleted ? "Hide completed to-dos" : Brand.Words.showCompleted(completed.count)) {
@@ -118,7 +122,7 @@ private struct HeadingRow: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 TextField("Heading", text: $heading.title)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(Brand.Palette.accent)
                 Menu {
                     // Its to-dos stay in the project, without a heading.
@@ -159,6 +163,7 @@ struct AreaView: View {
                             app.destination = .project(try Workspace(context: context).addProject(name: "New Project", area: area))
                         }
                     }
+                    Button("New Note") { app.newNote() }
                     Divider()
                     Button("Delete Area…", role: .destructive) { confirmsDelete = true }
                 }
@@ -187,6 +192,7 @@ struct AreaView: View {
                 Rectangle().fill(Brand.Palette.hairline).frame(height: 1).plainRow(top: 10, bottom: 6)
             }
             ToDoRows(todos: area.openToDos, showsContainer: false, showsWhen: true)
+            NoteRows(notes: (area.notes ?? []).inOrder, group: area.persistentModelID)
         }
         .textFieldStyle(.plain)
         .confirmationDialog("Delete the area “\(area.name)”?", isPresented: $confirmsDelete) {
@@ -195,7 +201,7 @@ struct AreaView: View {
                 Alerts.shared.attempt("delete the area") { try Workspace(context: context).delete(area) }
             }
         } message: {
-            Text("Its projects and to-dos are kept, without an area.")
+            Text("Its projects, to-dos and notes are kept, without an area.")
         }
     }
 }

@@ -203,3 +203,86 @@ fetched a page at a time without loading every to-do. `ListQueryTests` builds ev
 Measured (`TEST_RUNNER_EZRA_LOAD`): a Logbook page takes 6 ms at 5,000 to-dos and 19 ms at 50,000; opening the Logbook
 takes 67 ms and 126 ms. The other lists still load every open to-do: at 50,000, re-reading them after a save takes about
 1 s and switching lists 0.5–2 s. Paging those lists the same way is step 2.
+
+## Notes inside the lists
+
+There is no separate Notes section. A note is an item like a to-do and lives in one place: a project (under a heading
+or not), an area, or the Inbox.
+
+- Note rows sit under the to-dos of a project, heading, area and the Inbox; clicking one opens it as a page with a back
+  arrow. New Note is in the bottom toolbar and in the project and area menus, and files the note where you are.
+- A note can be attached to any number of to-dos (`ToDo.noteIDs`). An open to-do shows its notes as chips with an
+  Attach note menu; a row shows a page mark. `[[Title]]` written in a to-do's notes still counts as an attachment.
+- The note page lists the to-dos it is attached to; "New to-do from this note" makes one already attached and filed
+  beside the note.
+- Quick Find finds notes by title (and by text after Continue Search) and offers an All Notes list.
+- Dragging a note onto a sidebar project, area or the Inbox files it there; within its list it reorders.
+
+Screens rendered from the app with a developer's and a product owner's data are in `docs/notes-workflow/`
+(`TEST_RUNNER_EZRA_SNAPSHOTS=1`, screens `notes-*`).
+
+## Menu bar, sidebar menus, dragging between sections
+
+- **Menu bar** (`Ezra/App/Menus.swift`): File (New To-Do ⌘N, New Note, New Heading, New Project ⌥⌘N, New Area), Edit
+  (Quick Find… ⌘F), View (Hide Sidebar ⌘/, Go To ⌘1–⌘7 and ⌘J, Back ⌘[, Forward ⌘]), Items for the open to-do (When… ⌘S,
+  Move… ⇧⌘M, Deadline… ⇧⌘D, Today ⌘T, This Evening ⌘E, Anytime ⌘R, Someday ⌘O, Complete ⌘K, Remove From Project,
+  Show in Project ⌘L, Delete) and Window (Quick Entry). Every window shortcut lives there, once.
+- **Right-click** a sidebar list, project or area for its actions: new to-do, note or heading there, complete or reopen
+  a project, move it to an area, save it as a template, delete (with a confirmation).
+- **Dragging between sections**: a to-do dropped on a row or header of another section joins it. Today and This Evening
+  (the evening header appears while dragging), the days of Upcoming, the projects and areas of Anytime and Someday,
+  and the headings of a project.
+- The sidebar's list scrolls below the window buttons, not under them. Text is one point larger throughout.
+
+## The note editor
+
+A note is stored as Markdown and edited as blocks (`Ezra/Models/NoteBlocks.swift`, `Ezra/Features/Notes/BlockEditor.swift`,
+`BlockRows.swift`). Each line shows as what it is while it is typed: headings, bulleted, numbered and nested lists,
+checkboxes, quotes, fenced code, dividers and pipe tables; bold, italic, `code`, ~~strikethrough~~ and links are styled
+in place with their marks dimmed.
+
+- Start a line with `# `, `## `, `### `, `- `, `1. `, `[] `, `> `, three backticks or `---` to make that block.
+- Return carries a list on and leaves it on an empty item; Backspace at the start of a line makes it plain text, then
+  joins it to the line above; Tab and Shift-Tab nest list items; the arrows move between blocks.
+- Hover a block for its handle: the plus adds a block below; drag the grip to move the block, or click it to turn the
+  block into another kind, duplicate or delete it.
+- Pasted Markdown becomes blocks. A table is edited cell by cell; rows and columns are added at its edges and removed
+  by right-clicking a cell.
+- Nothing in the interface shows or names Markdown: the marks for bold, italic, code and links are hidden and appear,
+  dimmed, only around the cursor. Opening a note never rewrites it; the stored Markdown changes only when you edit.
+- A block's height is measured from its text at the offered width (`MarkdownTextField.sizeThatFits`), never from the
+  text view's own layout; measuring from the view made long lines spill over the next block.
+
+## Layouts in notes
+
+A note can hold layouts: blocks side by side in columns, or in a grid of cells (`BlockLayouts.swift`,
+`NoteBlockEdits.swift`). The plus on a block's handle offers 2, 3 and 4 Columns, Wide Left, Wide Right, Grid 2 × 2 and
+Grid 3 × 2. Each cell holds blocks of its own (headings, lists, checkboxes, tables and so on), typed and edited as
+anywhere else. Blocks are dragged into, out of and between cells. A layout's handle adds or removes columns and cells,
+makes the widths equal, takes the layout apart keeping its text, or deletes it.
+
+A layout is one kind of block with relative column widths; more cells than columns wrap into further rows, which is
+what makes a grid. In the stored Markdown a layout is three comment lines (`<!-- layout 2:1 -->`, `<!-- cell -->`,
+`<!-- /layout -->`) around the cells' ordinary Markdown, so other apps show the cells one after another.
+
+## Claude can use Ezra (MCP)
+
+Claude Code and the Claude desktop app can read and change your to-dos, projects, notes and calendar through the same
+tools Ezra's own assistant uses (`MCPService.swift`: 16 tools, read and write).
+
+- **Switch it on:** Settings › Claude › Let Claude use Ezra. Off by default.
+- **Claude Code:** Copy the Command, paste it into Terminal, start a new session.
+- **Claude desktop app:** Add Ezra to the Claude Desktop App…, choose `claude_desktop_config.json` in the window that
+  opens (it starts in `~/Library/Application Support/Claude`), press Add, then quit and reopen Claude. Ezra merges its
+  entry into that file and keeps the rest. Copy the Settings Entry is there for doing it by hand.
+
+How it is put together: Ezra listens on 127.0.0.1 only (`MCPServer.swift`, port 47821) and answers JSON-RPC over HTTP
+POST. Claude starts `Ezra.app/Contents/MacOS/ezra-mcp` (`EzraMCP/main.swift`), which passes Claude's messages to Ezra
+and opens Ezra when it is not running. Every request must carry a token Ezra made and keeps in the Keychain; the copied
+setup contains it. A request with an Origin header (a web page) is refused, with or without the token. Settings › Claude
+can make a new token, which cuts off what was set up with the old one.
+
+To try it without touching real data: `open -n Ezra.app --args -LoadTest 200 -MCPTestToken <any> -MCPTestPort 47990`,
+then pipe JSON-RPC lines to `ezra-mcp` with `EZRA_MCP_TOKEN` and `EZRA_MCP_PORT` set. The test token is honoured only
+in load-test mode.
+

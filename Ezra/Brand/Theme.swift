@@ -68,11 +68,11 @@ enum Brand {
     }
 
     enum Fonts {
-        static let title = Font.system(size: 24, weight: .bold)
-        static let row = Font.system(size: 14)
-        static let rowBold = Font.system(size: 14, weight: .semibold)
-        static let subtitle = Font.system(size: 12)
-        static let label = Font.system(size: 12, weight: .semibold)
+        static let title = Font.system(size: 25, weight: .bold)
+        static let row = Font.system(size: 15)
+        static let rowBold = Font.system(size: 15, weight: .semibold)
+        static let subtitle = Font.system(size: 13)
+        static let label = Font.system(size: 13, weight: .semibold)
     }
 }
 

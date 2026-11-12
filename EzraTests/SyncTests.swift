@@ -105,7 +105,8 @@ struct SyncTests {
         a.workspace.context.insert(item)
         item.task = todo
         let event = try a.workspace.addEvent(title: "Review", start: .now, bucket: .fire, project: project)
-        try a.workspace.addNote(title: "Plan", body: "# Goal", project: project)
+        let plan = try a.workspace.addNote(title: "Plan", body: "# Goal", heading: heading)
+        try a.workspace.attach(plan, to: todo)
         todo.event = event
         try a.workspace.context.save()
 
@@ -118,7 +119,10 @@ struct SyncTests {
         #expect(arrived.startDate == todo.startDate && arrived.order == todo.order)
         #expect(arrived.project?.name == "Launch" && arrived.project?.area?.name == "Work" && arrived.heading?.title == "Prep")
         #expect(arrived.sortedChecklist.map(\.title) == ["Headline"] && arrived.event?.title == "Review")
-        #expect(try b.workspace.notes().first?.project?.name == "Launch")
+        // The note arrives under its heading, still attached to the to-do.
+        let note = try #require(try b.workspace.notes().first)
+        #expect(note.project?.name == "Launch" && note.heading?.title == "Prep")
+        #expect(try b.workspace.attachedNotes(of: arrived) == [note])
         #expect(await firebase.itemCount() == 7)
 
         // B completes it and renames the project; A sees both.

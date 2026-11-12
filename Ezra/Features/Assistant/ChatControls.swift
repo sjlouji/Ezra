@@ -45,7 +45,7 @@ struct ChatParamsPanel: View {
                     ))
                 }
                 Text("Each message is also answered by these, for comparison. They can read your data but not change it.")
-                    .font(.system(size: 11))
+                    .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }
         }
@@ -88,7 +88,7 @@ struct ChatWaitingStrip: View {
             }
             if !model.queue.isEmpty {
                 Text("Waiting messages are sent together when \(Brand.assistant) has finished.")
-                    .font(.system(size: 10.5))
+                    .font(.system(size: 11.5))
                     .foregroundStyle(Brand.Palette.secondary)
             }
         }

@@ -28,6 +28,12 @@ targets:
     sources: [Ezra, Shared]
     dependencies:
       - target: EzraWidgets
+      # The helper Claude starts sits beside the app's own program, so its path is known once the app is installed.
+      - target: EzraMCP
+        embed: true
+        codeSign: true
+        copy:
+          destination: executables
     info:
       path: Ezra/Info.plist
       properties:
@@ -56,6 +62,8 @@ targets:
         com.apple.security.personal-information.calendars: true
         # Dictation in the chat and in Quick Entry.
         com.apple.security.device.audio-input: true
+        # Claude on this Mac connects to Ezra (Settings › Claude); the listener accepts 127.0.0.1 only.
+        com.apple.security.network.server: true
         # The folder the app shares with its widgets.
         com.apple.security.application-groups: [Z7V2UFGTCB.app.ezra.Ezra]
         # com.apple.developer.icloud-services: [CloudKit]
@@ -66,6 +74,16 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         PRODUCT_BUNDLE_IDENTIFIER: app.ezra.Ezra
         ENABLE_HARDENED_RUNTIME: YES
+  EzraMCP:
+    type: tool
+    platform: macOS
+    sources: [EzraMCP]
+    settings:
+      base:
+        PRODUCT_NAME: ezra-mcp
+        PRODUCT_BUNDLE_IDENTIFIER: app.ezra.Ezra.mcp
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
   EzraWidgets:
     type: app-extension
     platform: macOS

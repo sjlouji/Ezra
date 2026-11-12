@@ -46,7 +46,7 @@ struct DragSortTests {
         #expect(try workspace.notes().first?.title == "New")
     }
 
-    @Test func aNoteDroppedOnAProjectIsFiledThereAndOnNotesIsTakenOut() throws {
+    @Test func aNoteDroppedOnAProjectIsFiledThereAndOnTheInboxIsTakenOut() throws {
         let (workspace, _) = try makeWorkspace()
         let project = try workspace.addProject(name: "Trip")
         let note = try workspace.addNote(title: "Packing list")
@@ -54,7 +54,7 @@ struct DragSortTests {
         let app = makeApp(workspace)
         app.sortSlots[UUID()] = SortSlot(frame: row(0, x: 400), item: .note(note), group: .notes(nil))
         app.zones[UUID()] = DropZone(frame: row(2), target: .project(project))
-        app.zones[UUID()] = DropZone(frame: row(4), target: .allNotes)
+        app.zones[UUID()] = DropZone(frame: row(4), target: .list(.inbox))
 
         app.dragChanged(.note(note), at: CGPoint(x: 500, y: 20), from: row(0, x: 400))
         app.dragChanged(.note(note), at: CGPoint(x: 100, y: 100), from: row(0, x: 400))
@@ -63,16 +63,55 @@ struct DragSortTests {
         #expect(note.project == project)
 
         drag(.note(note), in: app, from: row(0, x: 400), to: CGPoint(x: 100, y: 180))
-        #expect(note.project == nil)
+        #expect(note.isInInbox)
 
-        // The Notes entry takes notes only: a to-do dragged there stays where it is and nothing lights up.
+        // A to-do goes to the same places.
         app.dragChanged(.todo(todo), at: CGPoint(x: 500, y: 300), from: row(7, x: 400))
-        app.dragChanged(.todo(todo), at: CGPoint(x: 100, y: 180), from: row(7, x: 400))
-        #expect(app.hoverZone == nil && app.dropHint == nil)
         app.dragChanged(.todo(todo), at: CGPoint(x: 100, y: 100), from: row(7, x: 400))
         #expect(app.dropHint == "Move to Trip")
         app.dragEnded()
         #expect(todo.project == project)
+    }
+
+    @Test func aToDoDraggedOntoAnotherSectionOfTheListJoinsIt() throws {
+        let (workspace, _) = try makeWorkspace()
+        let app = makeApp(workspace)
+        let morning = try workspace.addToDo(title: "Morning", schedule: .on(.now))
+        let late = try workspace.addToDo(title: "Late", schedule: .on(.now, evening: true))
+        let (day, evening) = (UUID(), UUID())
+        app.slots[UUID()] = RowSlot(frame: row(0), todo: morning, runID: day, fallback: .evening(false))
+        app.slots[UUID()] = RowSlot(frame: row(2), todo: late, runID: evening, fallback: .evening(true))
+        (app.runs[day], app.runs[evening]) = ([morning], [late])
+
+        // Over a row of This Evening the hint says where it will go; releasing there moves it.
+        app.dragChanged(.todo(morning), at: CGPoint(x: 100, y: 20), from: row(0))
+        app.dragChanged(.todo(morning), at: CGPoint(x: 100, y: 100), from: row(0))
+        #expect(app.dropHint == "Move to \(Brand.Words.thisEvening)")
+        app.dragEnded()
+        #expect(morning.evening && morning.when == .dated)
+
+        // And back, onto a row of the day.
+        app.slots = [:]
+        app.slots[UUID()] = RowSlot(frame: row(0), todo: late, runID: evening, fallback: .evening(true))
+        app.slots[UUID()] = RowSlot(frame: row(2), todo: morning, runID: day, fallback: .evening(false))
+        (app.runs[day], app.runs[evening]) = ([morning], [late])
+        drag(.todo(late), in: app, from: row(0), to: CGPoint(x: 100, y: 100))
+        #expect(!late.evening)
+
+        // A section with nothing in it is reached through its header: a day in Upcoming, a heading in a project.
+        let thursday = SmartList.day(3)
+        app.zones[UUID()] = DropZone(frame: row(5), target: .day(thursday))
+        drag(.todo(late), in: app, from: row(0), to: CGPoint(x: 100, y: 220))
+        #expect(late.startDate == thursday && !late.evening)
+
+        let project = try workspace.addProject(name: "Launch")
+        let heading = try workspace.addHeading(title: "Prep", to: project)
+        app.zones[UUID()] = DropZone(frame: row(7), target: .heading(heading))
+        drag(.todo(late), in: app, from: row(0), to: CGPoint(x: 100, y: 300))
+        #expect(late.project == project && late.heading == heading)
+        // Dropped among the project's to-dos that have no heading, it leaves its heading and stays in the project.
+        try workspace.place(late, at: .project(project), plannerDay: .now)
+        #expect(late.project == project && late.heading == nil)
     }
 
     @Test func projectsReorderMoveBetweenAreasAndAreasReorder() throws {

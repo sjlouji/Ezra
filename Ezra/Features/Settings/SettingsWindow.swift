@@ -13,6 +13,7 @@ struct SettingsWindow: View {
             Tab("General", systemImage: "slider.horizontal.3") { GeneralPane() }
             Tab("Sync", systemImage: "checkmark.icloud") { SyncPane(sync: sync) }
             Tab(Brand.assistant, systemImage: "sparkles") { AssistantPane(chat: chat) }
+            Tab("Claude", systemImage: "link") { ClaudePane() }
             Tab("Automations", systemImage: "clock.arrow.2.circlepath") { AutomationsPane(runner: automations) }
             Tab("Quick Entry", systemImage: "plus.app") { QuickEntryPane() }
             Tab("Reminders", systemImage: "list.bullet.rectangle") { RemindersPane() }
@@ -22,7 +23,7 @@ struct SettingsWindow: View {
         .scenePadding()
         .frame(width: 720)
         .preferredColorScheme(Brand.Appearance(rawValue: appearance)?.scheme)
-        .font(.system(size: 13))
+        .font(.system(size: 14))
     }
 }
 
@@ -33,7 +34,7 @@ struct PaneNote: View {
 
     var body: some View {
         Text(text)
-            .font(.system(size: 12))
+            .font(.system(size: 13))
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
             .textSelection(.enabled)
@@ -121,9 +122,9 @@ struct SyncPane: View {
                     .font(.system(size: 84))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(sync?.isSignedIn == true ? Brand.Palette.accent : Color.secondary)
-                (Text(Brand.name).bold() + Text(" Sync")).font(.system(size: 24))
+                (Text(Brand.name).bold() + Text(" Sync")).font(.system(size: 25))
                 Label(sync?.isSignedIn == true ? "On" : "Off", systemImage: "circle.fill")
-                    .font(.system(size: 12))
+                    .font(.system(size: 13))
                     .foregroundStyle(sync?.isSignedIn == true ? Brand.Palette.logbook : Color.secondary)
             }
             .frame(width: 200)

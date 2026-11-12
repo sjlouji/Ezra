@@ -76,7 +76,7 @@ struct QuickEntryPane: View {
         Form {
             LabeledContent("Shortcut") {
                 Text("⌃ Space")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
                     .padding(.vertical, 3)
                     .padding(.horizontal, 9)
                     .background(.quaternary, in: .rect(cornerRadius: 5))

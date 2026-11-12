@@ -70,7 +70,7 @@ struct MoveView: View {
                 .padding(.bottom, 10)
             }
         }
-        .font(.system(size: 13.5))
+        .font(.system(size: 14.5))
         .foregroundStyle(Brand.Palette.ink)
         .frame(width: 440, height: 380)
         .background(Brand.Palette.page)

@@ -24,7 +24,7 @@ struct PlannerBar: View {
                     .help("Jump to another month or year")
                     .popover(isPresented: $jumping, arrowEdge: .bottom) { JumpPicker(mode: mode) { jumping = false } }
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(Brand.Palette.secondary)
                     .allowsHitTesting(false)
                 step("Previous \(mode.rawValue)", "chevron.left", by: -1)
@@ -64,7 +64,7 @@ struct PlannerBar: View {
         let unit: Calendar.Component = mode == .week ? .weekOfYear : mode == .month ? .month : .year
         return Button(label, systemImage: symbol) { go(to: Planner.shifted(app.day, by: value, unit)) }
             .labelStyle(.iconOnly)
-            .font(.system(size: 13, weight: .semibold))
+            .font(.system(size: 14, weight: .semibold))
             .foregroundStyle(Brand.Palette.secondary)
     }
 
@@ -160,7 +160,7 @@ struct MonthView: View {
             HStack(spacing: 0) {
                 ForEach(days.prefix(7), id: \.self) { day in
                     Text(day.formatted(.dateTime.weekday(.abbreviated)).uppercased())
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(Brand.Palette.secondary)
                         .frame(maxWidth: .infinity)
                 }
@@ -201,18 +201,18 @@ struct MonthView: View {
         } label: {
             VStack(alignment: .leading, spacing: 2) {
                 Text(day.formatted(.dateTime.day()))
-                    .font(.system(size: 12, weight: isToday ? .bold : .medium))
+                    .font(.system(size: 13, weight: isToday ? .bold : .medium))
                     .foregroundStyle(isToday ? .white : inMonth ? Brand.Palette.ink : Brand.Palette.secondary.opacity(0.6))
                     .frame(minWidth: 20, minHeight: 20)
                     .background(isToday ? Brand.Palette.accent : .clear, in: .circle)
                 ForEach(Array(lines.prefix(3).enumerated()), id: \.offset) { _, line in
                     HStack(spacing: 4) {
                         Image(systemName: line.symbol).font(.system(size: 6)).foregroundStyle(line.tint)
-                        Text(line.text).font(.system(size: 10.5)).foregroundStyle(Brand.Palette.ink).lineLimit(1)
+                        Text(line.text).font(.system(size: 11.5)).foregroundStyle(Brand.Palette.ink).lineLimit(1)
                     }
                 }
                 if lines.count > 3 {
-                    Text("+\(lines.count - 3) more").font(.system(size: 10)).foregroundStyle(Brand.Palette.secondary)
+                    Text("+\(lines.count - 3) more").font(.system(size: 11)).foregroundStyle(Brand.Palette.secondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -282,7 +282,7 @@ struct YearView: View {
         } label: {
             VStack(spacing: 0) {
                 Text(day.formatted(.dateTime.day()))
-                    .font(.system(size: 10.5, weight: isToday || count > 0 ? .semibold : .regular))
+                    .font(.system(size: 11.5, weight: isToday || count > 0 ? .semibold : .regular))
                     .foregroundStyle(isToday ? .white : count > 0 ? Brand.Palette.ink : Brand.Palette.secondary)
                     .frame(width: 17, height: 17)
                     .background(isToday ? Brand.Palette.accent : .clear, in: .circle)

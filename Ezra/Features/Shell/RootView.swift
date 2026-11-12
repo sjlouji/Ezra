@@ -57,7 +57,7 @@ struct RootView: View {
         .overlay(alignment: .top) {
             if LoadTest.active > 0 {
                 Text("Load test: \(LoadTest.active.formatted()) made-up to-dos. Not your data; nothing here syncs.")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(.white)
                     .padding(.vertical, 3)
                     .padding(.horizontal, 10)
@@ -72,9 +72,8 @@ struct RootView: View {
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.hand)
-            .font(.system(size: 13))
+            .font(.system(size: 14))
             .foregroundStyle(Brand.Palette.secondary)
-            .keyboardShortcut("/")
             .help(app.sidebarHidden ? "Show the sidebar (⌘/)" : "Hide the sidebar (⌘/)")
             // Just right of the window's own three buttons.
             .padding(.leading, 82)
@@ -90,14 +89,8 @@ struct RootView: View {
         .tint(Brand.Palette.accent)
         // Sidebar (236) + the narrowest usable screen.
         .frame(minWidth: 640, minHeight: 480)
-        // ⌘J goes to the assistant from anywhere.
-        .background {
-            Button("Back") { app.goBack() }.keyboardShortcut("[").disabled(!app.canGoBack).hidden()
-            Button("Forward") { app.goForward() }.keyboardShortcut("]").disabled(!app.canGoForward).hidden()
-            Button(Brand.assistant) { app.destination = .assistant }
-                .keyboardShortcut("j")
-                .hidden()
-        }
+        // The menu bar (`EzraCommands`) acts on this window through its navigation state.
+        .focusedSceneValue(\.appModel, app)
         .overlay {
             if app.showsQuickFind {
                 ZStack(alignment: .top) {
@@ -126,7 +119,6 @@ struct RootView: View {
                 .transition(.opacity.combined(with: .scale(scale: 0.97, anchor: .top)))
             }
         }
-        .background { ToDoShortcuts() }
         .onAppear {
             app.context = context
             TypeToSearch.install(for: app)
@@ -181,45 +173,10 @@ struct RootView: View {
         case .planner: PlannerView()
         case .project(let project): ProjectView(project: project).id(project.persistentModelID)
         case .area(let area): AreaView(area: area).id(area.persistentModelID)
-        case .notes(let project): NotesBrowser(project: project)
+        case .note(let note): NoteScreen(note: note).id(note.persistentModelID)
         case .assistant: ChatView(model: chat)
         case .special(let kind): SpecialListView(kind: kind)
         case nil: ContentUnavailableView("Nothing selected", systemImage: "sidebar.left")
-        }
-    }
-}
-
-/// Keyboard commands for the open to-do: When (⌘S), Deadline (⇧⌘D), Move (⇧⌘M), Today (⌘T), This Evening (⌘E),
-/// Anytime (⌘R), Someday (⌘O) and Complete (⌘K).
-private struct ToDoShortcuts: View {
-    @Environment(AppModel.self) private var app
-    @Environment(\.modelContext) private var context
-
-    var body: some View {
-        Group {
-            command("When", "s") { app.pick(.when, for: $0) }
-            command("Deadline", "d", [.command, .shift]) { app.pick(.deadline, for: $0) }
-            command("Move", "m", [.command, .shift]) { app.moving = $0 }
-            command("Today", "t") { plan($0, .on(.now)) }
-            command("This Evening", "e") { plan($0, .on(.now, evening: true)) }
-            command("Anytime", "r") { plan($0, .anytime) }
-            command("Someday", "o") { plan($0, .someday) }
-            command("Complete", "k") { todo in
-                Alerts.shared.attempt("complete the to-do") { try Workspace(context: context).setCompleted(todo, true) }
-                app.closeCard()
-            }
-        }
-        .hidden()
-    }
-
-    private func command(_ title: String, _ key: KeyEquivalent, _ modifiers: EventModifiers = .command, action: @escaping (ToDo) -> Void) -> some View {
-        Button(title) { if let todo = app.card?.todo { action(todo) } }
-            .keyboardShortcut(key, modifiers: modifiers)
-    }
-
-    private func plan(_ todo: ToDo, _ schedule: Schedule) {
-        Alerts.shared.attempt("reschedule the to-do") {
-            try withAnimation(AppModel.spring) { try Workspace(context: context).schedule(todo, schedule) }
         }
     }
 }

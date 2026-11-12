@@ -86,7 +86,7 @@ struct ChatHistory: View {
             if let symbol { Image(systemName: symbol) }
             Text(title.uppercased())
         }
-            .font(.system(size: 10, weight: .semibold))
+            .font(.system(size: 11, weight: .semibold))
             .foregroundStyle(Brand.Palette.secondary)
             .padding(.horizontal, 8)
             .padding(.top, 8)
@@ -145,7 +145,7 @@ private struct ChatHistoryRow: View {
                         .foregroundStyle(Brand.Palette.ink)
                         .lineLimit(1)
                     Text(thread.updatedAt.formatted(.relative(presentation: .named)))
-                        .font(.system(size: 10))
+                        .font(.system(size: 11))
                         .foregroundStyle(Brand.Palette.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,7 +162,7 @@ private struct ChatHistoryRow: View {
         }
         .labelStyle(.iconOnly)
         .buttonStyle(.hand)
-        .font(.system(size: 11))
+        .font(.system(size: 12))
         .foregroundStyle(Brand.Palette.secondary)
         .padding(.vertical, 5)
         .padding(.horizontal, 8)

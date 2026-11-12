@@ -80,13 +80,13 @@ struct QuickEntryView: View {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 CheckBox(checked: false).alignmentGuide(.firstTextBaseline) { $0[.bottom] - 2 }
                 TextField(Brand.Words.newToDo, text: $title)
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.system(size: 16, weight: .medium))
                     .focused($titleFocused)
                     .onSubmit(save)
                 DictationButton(text: $title).buttonStyle(.hand)
             }
             TextField(Brand.Words.notes, text: $notes, axis: .vertical)
-                .font(.system(size: 13))
+                .font(.system(size: 14))
                 .lineLimit(1...5)
                 .padding(.leading, 24)
             HStack(spacing: 10) {
@@ -109,11 +109,11 @@ struct QuickEntryView: View {
                 .labelsHidden()
                 .fixedSize()
             }
-            .font(.system(size: 12.5))
+            .font(.system(size: 13.5))
             .padding(.leading, 24)
             HStack {
                 if let problem {
-                    Text(problem).font(.system(size: 12)).foregroundStyle(Brand.Palette.deadline)
+                    Text(problem).font(.system(size: 13)).foregroundStyle(Brand.Palette.deadline)
                 }
                 Spacer()
                 Button("Cancel", action: close).keyboardShortcut(.cancelAction)

@@ -132,6 +132,8 @@ struct FirebaseAuthClient: Sendable {
 enum Keychain {
     static let syncSession = "sync.session"
     static let claudeKey = "claude.key"
+    /// What Claude must send to use Ezra's tools (Settings › Claude).
+    static let mcpToken = "mcp.token"
 
     private static func query(_ account: String) -> [String: Any] { [
         kSecClass as String: kSecClassGenericPassword,

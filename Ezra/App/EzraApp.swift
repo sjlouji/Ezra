@@ -24,6 +24,11 @@ struct EzraApp: App {
                 Log.store.info("Load test: \(made.todos) to-dos, \(made.projects) projects, \(made.notes) notes, \(made.events) events")
                 store = .success(container)
                 EzraStore.shared = container
+                // For trying the Claude connection end to end: on this made-up data only, with a token given at launch.
+                if let token = UserDefaults.standard.string(forKey: "MCPTestToken"), !token.isEmpty {
+                    let port = UserDefaults.standard.integer(forKey: "MCPTestPort")
+                    MCPServer.shared.start(container: container, port: port > 0 ? port : MCPServer.defaultPort + 1, token: token)
+                }
                 chat = ChatModel(container: container)
                 library = Library(context: container.mainContext)
                 (sync, widgets, automations) = (nil, nil, nil)
@@ -40,6 +45,7 @@ struct EzraApp: App {
             automations = AutomationRunner { ChatModel(container: container) }
             automations?.start()
             sync?.start()
+            MCPServer.shared.apply(container: container)
             QuickEntry.shared.install()
             do {
                 try Seeder.prepare(context: container.mainContext)
@@ -73,6 +79,7 @@ struct EzraApp: App {
         }
         .defaultSize(width: 1180, height: 760)
         .windowStyle(.hiddenTitleBar)
+        .commands { EzraCommands() }
 
         // The item reports back whether it is shown on every pass; writing the same value again would redraw the app forever.
         MenuBarExtra(isInserted: Binding(get: { showsMenuBarItem }, set: { if $0 != showsMenuBarItem { showsMenuBarItem = $0 } })) {

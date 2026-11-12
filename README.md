@@ -9,8 +9,9 @@ note pages and an on-device AI assistant. SwiftUI + SwiftData, Swift 6, macOS 26
 **[Download Ezra 0.2.0 for Mac](https://github.com/sjlouji/Ezra/releases/download/v0.2.0/Ezra-0.2.0-mac.zip)** (8 MB zip, Apple silicon and Intel) · [all releases](https://github.com/sjlouji/Ezra/releases)
 
 - Needs macOS 26 or later.
-- Unzip it and move Ezra to Applications. The build is not notarized, so the first time right-click Ezra and choose
-  Open, or allow it under System Settings › Privacy & Security.
+- Unzip it and move Ezra to Applications. The build is not notarized, so the first time macOS says "Apple could not
+  verify Ezra is free of malware". Press Done, open System Settings › Privacy & Security, scroll down to the line
+  about Ezra and press Open Anyway, then confirm. After that it opens normally.
 - Sync is off in the download: it contains no Firebase project settings. To use sync, build from source with your own
   `Ezra/GoogleService-Info.plist`.
 - New in 0.2.0: notes inside the lists and attached to to-dos, a block editor for notes with columns and grids, a

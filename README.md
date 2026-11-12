@@ -8,8 +8,19 @@ note pages and an on-device AI assistant. SwiftUI + SwiftData, Swift 6, macOS 26
 
 **[Download Ezra 0.2.0 for Mac](https://github.com/sjlouji/Ezra/releases/download/v0.2.0/Ezra-0.2.0-mac.zip)** (8 MB zip, Apple silicon and Intel) · [all releases](https://github.com/sjlouji/Ezra/releases)
 
+**Or install it with one command.** Paste this into Terminal; it downloads the latest Ezra into Applications and opens
+it, with no warning from macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sjlouji/Ezra/main/install.sh | bash
+```
+
+It will not replace an Ezra that has sync set up, or one that is open. [`install.sh`](install.sh) is short; to read it
+before running it, download it first with `curl -fsSLO https://raw.githubusercontent.com/sjlouji/Ezra/main/install.sh`
+and then run `bash install.sh`.
+
 - Needs macOS 26 or later.
-- Unzip it and move Ezra to Applications. The build is not notarized, so the first time macOS says "Apple could not
+- If you use the download link instead: unzip it and move Ezra to Applications. The build is not notarized, so the first time macOS says "Apple could not
   verify Ezra is free of malware". Press Done, open System Settings › Privacy & Security, scroll down to the line
   about Ezra and press Open Anyway, then confirm. After that it opens normally.
 - Sync is off in the download: it contains no Firebase project settings. To use sync, build from source with your own

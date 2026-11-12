@@ -6,13 +6,15 @@ note pages and an on-device AI assistant. SwiftUI + SwiftData, Swift 6, macOS 26
 
 ## Download
 
-**[Download Ezra 0.1.0 for Mac](https://github.com/sjlouji/Ezra/releases/latest/download/Ezra-0.1.0-mac.zip)** (7 MB zip, Apple silicon and Intel) · [all releases](https://github.com/sjlouji/Ezra/releases)
+**[Download Ezra 0.2.0 for Mac](https://github.com/sjlouji/Ezra/releases/download/v0.2.0/Ezra-0.2.0-mac.zip)** (8 MB zip, Apple silicon and Intel) · [all releases](https://github.com/sjlouji/Ezra/releases)
 
 - Needs macOS 26 or later.
 - Unzip it and move Ezra to Applications. The build is not notarized, so the first time right-click Ezra and choose
   Open, or allow it under System Settings › Privacy & Security.
 - Sync is off in the download: it contains no Firebase project settings. To use sync, build from source with your own
   `Ezra/GoogleService-Info.plist`.
+- New in 0.2.0: notes inside the lists and attached to to-dos, a block editor for notes with columns and grids, a
+  menu bar, and a connector that lets Claude Code and the Claude desktop app use Ezra (Settings › Claude).
 
 ## Run
 

@@ -121,6 +121,7 @@
 		C01A069E766B3D5124E6D347 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6DEBA54BE970C55052EE8BD /* Assets.xcassets */; };
 		C0659FDD3E9E961CC0138AB0 /* UpcomingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21606D5EA179A846D5028883 /* UpcomingView.swift */; };
 		C3CDF3CD49B06203E9BCDB0B /* ChatParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C780382BD0E14A96B079901A /* ChatParams.swift */; };
+		C4F6248A3D82819CA2CF8D01 /* FreshStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47CD74FD4CD48B477528A63 /* FreshStart.swift */; };
 		CB72A8823662C3480E543488 /* WorkloadDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7DD51CA4715715EA45E46 /* WorkloadDashboard.swift */; };
 		CCAD2E09CF54340FDEA06CE4 /* ChatSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D020D14B9C34AC74015EA4 /* ChatSteps.swift */; };
 		CE26CC4E1565A8698F2F66DF /* AgentTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = E829903FBC6ABE9956E4EFC6 /* AgentTool.swift */; };
@@ -129,6 +130,7 @@
 		D5DF507F593317778E939BB8 /* SyncStore+Apply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417ECC88AD59764A048FFB47 /* SyncStore+Apply.swift */; };
 		D9D1DD7048DEBFDABA57FE29 /* AgentNoteTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A5E9A328C7815B9DB6DF80 /* AgentNoteTools.swift */; };
 		DA1231EB067D2E7AB36AD8A4 /* AutomationsPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159DE0BAF130D99257A7B9F3 /* AutomationsPane.swift */; };
+		DA442233BE89C53C864ACF70 /* QuickEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11DF837665D6F9B09583105 /* QuickEntryTests.swift */; };
 		DBB0C603F3C66A89DA17E1C8 /* WhenPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3322D730BE0CECA0527651C /* WhenPicker.swift */; };
 		DC1D86E3892CC348AD3EDCFD /* TableBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186CC2AEA6E9792774D87EBE /* TableBlock.swift */; };
 		DCF480B18908242703BE86E4 /* DemoScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = B015CFBA7FC51C6CA55B9E68 /* DemoScript.swift */; };
@@ -291,6 +293,7 @@
 		9ACA84F5F1B913AEA922E200 /* LoadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadTests.swift; sourceTree = "<group>"; };
 		9E12ADAF1435F5767547479C /* NotesViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViews.swift; sourceTree = "<group>"; };
 		9F423C2244918E731875BDBA /* tailwind-config.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "tailwind-config.js"; sourceTree = "<group>"; };
+		A47CD74FD4CD48B477528A63 /* FreshStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshStart.swift; sourceTree = "<group>"; };
 		A78766E6B38BC703B2D8289B /* Workspace+Notes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Workspace+Notes.swift"; sourceTree = "<group>"; };
 		AE1BCB1BB38CFD7F6C04A2FD /* DailyBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyBriefing.swift; sourceTree = "<group>"; };
 		AE37511628B7F172811ED746 /* NoteBlockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBlockTests.swift; sourceTree = "<group>"; };
@@ -320,6 +323,7 @@
 		CF814C5FD53792FD39243FF0 /* ProjectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectView.swift; sourceTree = "<group>"; };
 		D024E0F288A6BF48079509CB /* ChatMessageViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViews.swift; sourceTree = "<group>"; };
 		D111F613B36A81AABAE6CC16 /* ListQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListQueries.swift; sourceTree = "<group>"; };
+		D11DF837665D6F9B09583105 /* QuickEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickEntryTests.swift; sourceTree = "<group>"; };
 		D1C87771BEDBFC410DC4F5FF /* SmartList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartList.swift; sourceTree = "<group>"; };
 		D435296C558ECD81F67E1B63 /* WeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekView.swift; sourceTree = "<group>"; };
 		D92061A628C30D32E1492FA0 /* EventPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPanel.swift; sourceTree = "<group>"; };
@@ -406,6 +410,7 @@
 				310345C53976995C79F61414 /* NoteWorkflowTests.swift */,
 				8A5BD133D7A195AFBFE5E12A /* OllamaTests.swift */,
 				36225322AF25E68305404D1C /* PlannerTests.swift */,
+				D11DF837665D6F9B09583105 /* QuickEntryTests.swift */,
 				5D1F748FC0B1120C92B1FB69 /* SettingsTests.swift */,
 				B35462BC99A6AC7ABC25258B /* StreamTests.swift */,
 				41F73685A7F18F3FA64E0D83 /* SyncTests.swift */,
@@ -454,6 +459,7 @@
 				0AEC932016594EEAC0E0B41F /* DragDrop.swift */,
 				427081D3A2E617F8FA31600B /* ExternalCommands.swift */,
 				37632D1A159515701FF11AD5 /* Fixtures.swift */,
+				A47CD74FD4CD48B477528A63 /* FreshStart.swift */,
 				BDA40406E26F1E3781644C3F /* Gestures.swift */,
 				253D4D28DE15B8A6C425709A /* Library.swift */,
 				D111F613B36A81AABAE6CC16 /* ListQueries.swift */,
@@ -976,6 +982,7 @@
 				A2CED37A631B3DCFEA7AF724 /* FirebaseClients.swift in Sources */,
 				AE1A4B5E36453A7A368B0428 /* FirestoreClient.swift in Sources */,
 				2F5D8803F31CBB4492E9B99F /* Fixtures.swift in Sources */,
+				C4F6248A3D82819CA2CF8D01 /* FreshStart.swift in Sources */,
 				8F6B81C384C055711A799522 /* Gestures.swift in Sources */,
 				AE4C2EA0F60925FDB258E8A4 /* GroupedListView.swift in Sources */,
 				85330AF1CEA579F87742515C /* HomeView.swift in Sources */,
@@ -1060,6 +1067,7 @@
 				A8C39914F3AE4AED19368311 /* NoteWorkflowTests.swift in Sources */,
 				13F0884EBD56357AF34D68E4 /* OllamaTests.swift in Sources */,
 				BF129F17E1118466E7C48573 /* PlannerTests.swift in Sources */,
+				DA442233BE89C53C864ACF70 /* QuickEntryTests.swift in Sources */,
 				FF875CFE825658350A74B394 /* SettingsTests.swift in Sources */,
 				335E62A0B9E93A7A18DBD269 /* StreamTests.swift in Sources */,
 				711BB9681819F349BA2C4112 /* SyncTests.swift in Sources */,

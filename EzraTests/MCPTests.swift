@@ -100,3 +100,46 @@ struct MCPTests {
         #expect(throws: ClaudeDesktop.WrongFile.self) { try ClaudeDesktop.add(command: "c", token: "t", toFileAt: URL(fileURLWithPath: "/tmp/package.json")) }
     }
 }
+
+/// Erasing Ezra's data on this Mac.
+@MainActor
+struct FreshStartTests {
+    @Test func erasingRemovesTheDataAndSettingsButKeepsClaudesSwitchAndOtherFiles() throws {
+        let files = FileManager.default
+        let folder = files.temporaryDirectory.appending(path: "ezra-fresh-\(UUID().uuidString)")
+        try files.createDirectory(at: folder.appending(path: "Attachments"), withIntermediateDirectories: true)
+        try files.createDirectory(at: folder.appending(path: ".default_SUPPORT"), withIntermediateDirectories: true)
+        for name in ["default.store", "default.store-wal", "default.store-shm", ".default_SUPPORT/big", "Attachments/photo.png", "something-else.txt"] {
+            try Data("x".utf8).write(to: folder.appending(path: name))
+        }
+        let domain = "ezra.tests.fresh.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: domain))
+        defer { defaults.removePersistentDomain(forName: domain) }
+        defaults.set(true, forKey: MCPServer.enabledKey)
+        defaults.set(true, forKey: "sidebar.hidden")
+        defaults.set("dark", forKey: Brand.Appearance.key)
+        var forgotten: [String] = []
+
+        let stores = [folder.appending(path: "default.store"), folder.appending(path: "never-made.store")]
+        try FreshStart.erase(stores: stores, attachments: folder.appending(path: "Attachments"), defaults: defaults, domain: domain) { forgotten.append($0) }
+
+        // The store and the attached files are gone; a file Ezra did not make is left alone.
+        #expect(try files.contentsOfDirectory(atPath: folder.path) == ["something-else.txt"])
+        // Settings are back to their defaults, except that Claude may still use Ezra.
+        #expect(defaults.object(forKey: "sidebar.hidden") == nil && defaults.object(forKey: Brand.Appearance.key) == nil)
+        #expect(defaults.bool(forKey: MCPServer.enabledKey))
+        // Sync is signed out; the keys for Claude are not touched.
+        #expect(forgotten == [Keychain.syncSession])
+        // Erasing where there is nothing to erase is not an error.
+        try FreshStart.erase(stores: stores, attachments: folder.appending(path: "Attachments"), defaults: defaults, domain: domain) { _ in }
+        // The store is looked for where SwiftData really keeps it, which is a file called default.store somewhere real.
+        #expect(EzraStore.storeURL().lastPathComponent == "default.store" && EzraStore.storeURL(named: "x").lastPathComponent == "x.store")
+        // Asked to start with nothing at all, the demo content is noted as already given, so it is not put in.
+        #expect(defaults.object(forKey: Seeder.seededKey) == nil)
+        try FreshStart.erase(stores: stores, attachments: folder.appending(path: "Attachments"), defaults: defaults, domain: domain, withoutDemo: true) { _ in }
+        #expect(defaults.bool(forKey: Seeder.seededKey) && defaults.integer(forKey: Seeder.versionKey) == Seeder.version)
+        // A saved setting with the argument's name does not count as being asked.
+        #expect(!FreshStart.requested)
+    }
+}
+

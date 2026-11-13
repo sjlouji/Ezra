@@ -15,6 +15,10 @@ struct EzraApp: App {
 
     init() {
         do {
+            if FreshStart.requested {
+                try FreshStart.erase(withoutDemo: FreshStart.withoutDemo)
+                FreshStart.clearReminders()
+            }
             // A load test runs on a made-up store of its own: nothing is synced, and the widgets and automations stay on the real data.
             if LoadTest.requested > 0 {
                 try LoadTest.removeStore()
@@ -115,6 +119,12 @@ enum EzraStore {
     /// The store syncs through CloudKit only when the Info.plist names a container
     /// (see project.yml); otherwise it stays on this Mac.
     /// `named` opens a separate store file of that name (the load test's), never synced through iCloud.
+    /// Where a store's file is. SwiftData decides this (the folder shared with the widgets, when there is one), so it is
+    /// asked rather than assumed.
+    static func storeURL(named name: String? = nil) -> URL {
+        (name.map { ModelConfiguration($0, schema: schema, cloudKitDatabase: .none) } ?? ModelConfiguration(schema: schema, cloudKitDatabase: .none)).url
+    }
+
     static func makeContainer(inMemory: Bool = false, named name: String? = nil) throws -> ModelContainer {
         if let name {
             return try ModelContainer(for: schema, configurations: [ModelConfiguration(name, schema: schema, cloudKitDatabase: .none)])

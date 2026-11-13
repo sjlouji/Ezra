@@ -300,3 +300,11 @@ To try it without touching real data: `open -n Ezra.app --args -LoadTest 200 -MC
 then pipe JSON-RPC lines to `ezra-mcp` with `EZRA_MCP_TOKEN` and `EZRA_MCP_PORT` set. The test token is honoured only
 in load-test mode.
 
+## Starting over on one Mac
+
+`open -a Ezra --args -EraseAllDataOnThisMac YES` starts Ezra as on a new Mac (add `-WithoutDemoContent YES` to start
+with nothing at all, not even the demo content): its to-dos, projects, notes, attached
+files and settings on this Mac are removed and sync is signed out, before anything is opened (`FreshStart.swift`).
+It cannot be undone. What is kept: the switch and token that let Claude use Ezra, the Claude API key, files in a folder
+you chose for attachments, and whatever sync has stored in the cloud (signing in again brings that back).
+

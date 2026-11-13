@@ -111,10 +111,8 @@ enum LoadTest {
 
     /// Removes the load-test store's files, so each run starts from the same data.
     static func removeStore() throws {
-        let folder = URL.applicationSupportDirectory
-        for suffix in ["", "-shm", "-wal"] {
-            let file = folder.appending(path: "\(storeName).store\(suffix)")
-            if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }
+        for file in FreshStart.files(of: EzraStore.storeURL(named: storeName)) where FileManager.default.fileExists(atPath: file.path) {
+            try FileManager.default.removeItem(at: file)
         }
     }
 }
